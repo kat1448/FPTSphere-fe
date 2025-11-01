@@ -11,7 +11,6 @@ import UpcomingEvents from "../components/UpcomingEvents";
 const HomePage = () => {
   return (
     <>
-      <Header />
       <Banner />
       <Introduction />
       <FeaturedEvents/>
