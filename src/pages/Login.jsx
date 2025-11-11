@@ -1,171 +1,108 @@
-import React, { useState } from "react";
+// src/pages/Login.jsx
+
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
+import { useAuth } from "../contexts/AuthContext";
 import "../assets/css/login.css";
 import logo from "../assets/images/logo.jpg";
-import googleLogo from "../assets/images/google.png"; 
 
 const Login = () => {
-  const [isRegister, setIsRegister] = useState(false);
-  const [remember, setRemember] = useState(false);
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const result = await login(credentialResponse.credential);
 
-    if (isRegister) {
-      if (formData.password !== formData.confirmPassword) {
-        alert("Passwords do not match!");
-        return;
+      if (result.success) {
+        navigate("/");
+      } else {
+        alert(`Đăng nhập thất bại: ${result.message}`);
       }
-      console.log("Register Data:", formData);
-      // TODO: call API register
-    } else {
-      console.log("Login Data:", {
-        email: formData.email,
-        password: formData.password,
-        remember,
-      });
-      // TODO: call API login
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại!");
     }
   };
 
-  const handleGoogleLogin = () => {
-    console.log("Login with Google clicked");
-    // TODO: Add Google OAuth logic (Firebase or Google API)
+  const handleGoogleError = () => {
+    alert("Đăng nhập Google thất bại. Vui lòng thử lại!");
   };
 
   return (
     <div className="login-page">
+      <div className="login-background">
+        <div className="circle circle-1"></div>
+        <div className="circle circle-2"></div>
+        <div className="circle circle-3"></div>
+      </div>
+
       <div className="login-container">
-        <div className="login-header">
-          <img src={logo} alt="FPTSphere" className="login-logo" />
-          <h2>{isRegister ? "Create Your Account ✨" : "Welcome Back 👋"}</h2>
-          <p>
-            {isRegister
-              ? "Join FPTSphere and start managing your events effortlessly."
-              : "Log in to your FPTSphere account"}
-          </p>
+        <div className="login-left">
+          <div className="brand-section">
+            <img src={logo} alt="FPTSphere" className="brand-logo" />
+            <h1 className="brand-title">FPTSphere</h1>
+            <p className="brand-tagline">Empower Your Events</p>
+          </div>
+          
+          <div className="features-list">
+            <div className="feature-item">
+              <span className="feature-icon">🎯</span>
+              <div>
+                <h3>Smart Event Management</h3>
+                <p>Organize events efficiently</p>
+              </div>
+            </div>
+            <div className="feature-item">
+              <span className="feature-icon">👥</span>
+              <div>
+                <h3>Team Collaboration</h3>
+                <p>Work together seamlessly</p>
+              </div>
+            </div>
+            <div className="feature-item">
+              <span className="feature-icon">📊</span>
+              <div>
+                <h3>Analytics & Reports</h3>
+                <p>Track your success</p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <form className="login-form" onSubmit={handleSubmit}>
-          {isRegister && (
-            <div className="input-group">
-              <label>Full Name</label>
-              <input
-                type="text"
-                name="fullName"
-                placeholder="Enter your full name"
-                value={formData.fullName}
-                onChange={handleChange}
-                required
+        <div className="login-right">
+          <div className="login-card">
+            <div className="login-header">
+              <h2>Welcome Back! 👋</h2>
+              <p>Sign in with your Google account to continue</p>
+            </div>
+
+            <div className="google-login-wrapper">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleError}
+                useOneTap={false}
+                theme="outline"
+                size="large"
+                text="continue_with"
+                shape="rectangular"
+                logo_alignment="left"
               />
             </div>
-          )}
 
-          <div className="input-group">
-            <label>Email</label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="input-group">
-            <label>Password</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          {isRegister && (
-            <div className="input-group">
-              <label>Confirm Password</label>
-              <input
-                type="password"
-                name="confirmPassword"
-                placeholder="Re-enter your password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
+            <div className="login-footer">
+              <p>🔒 Secure authentication via Google OAuth 2.0</p>
+              <p className="note">Only authorized FPT University accounts can access</p>
             </div>
-          )}
-
-          {!isRegister && (
-            <div className="login-options">
-              <label className="remember-me">
-                <input
-                  type="checkbox"
-                  checked={remember}
-                  onChange={() => setRemember(!remember)}
-                />
-                Remember me
-              </label>
-              <a href="#" className="forgot-password">
-                Forgot Password?
-              </a>
-            </div>
-          )}
-
-          <button type="submit" className="login-btn">
-            {isRegister ? "Create Account" : "Sign In"}
-          </button>
-
-          {!isRegister && (
-            <>
-              <div className="divider">
-                <span>or</span>
-              </div>
-
-              <button
-                type="button"
-                className="google-btn"
-                onClick={handleGoogleLogin}
-              >
-                <img src={googleLogo} alt="Google" className="google-icon" />
-                Sign in with Google
-              </button>
-            </>
-          )}
-
-          <p className="signup-text">
-            {isRegister ? (
-              <>
-                Already have an account?{" "}
-                <a href="#" onClick={() => setIsRegister(false)}>
-                  Sign in
-                </a>
-              </>
-            ) : (
-              <>
-                Don’t have an account?{" "}
-                <a href="#" onClick={() => setIsRegister(true)}>
-                  Sign up
-                </a>
-              </>
-            )}
-          </p>
-        </form>
+          </div>
+        </div>
       </div>
     </div>
   );

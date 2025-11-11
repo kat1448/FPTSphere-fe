@@ -11,7 +11,10 @@
     "start": "react-scripts start"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.12.2",
     "aos": "^2.3.4",
+    "axios": "^1.13.2",
+    "js-cookie": "^3.0.5",
     "lucide-react": "^0.546.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
