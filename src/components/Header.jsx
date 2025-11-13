@@ -29,7 +29,7 @@ const Header = () => {
         <nav className={`nav ${isOpen ? "open" : ""}`}>
           <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="#">Events</a></li>
+            <li><a href="/event">Events</a></li>
             <li><a href="#">Features</a></li>
             <li><a href="#">About</a></li>
             <li><a href="#">Contact</a></li>

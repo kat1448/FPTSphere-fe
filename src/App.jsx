@@ -8,7 +8,7 @@ import { GOOGLE_CLIENT_ID } from './config/api.config';
 import Header from "./components/Header";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
-
+import Event from "./pages/Events"
 function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
