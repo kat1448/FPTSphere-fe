@@ -1,0 +1,94 @@
+import axios from 'axios';
+
+// Base API URL - Update this to match your backend
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7273/api';
+
+/**
+ * Axios instance with default config
+ */
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+/**
+ * Request interceptor - Add auth token if exists
+ */
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+/**
+ * Response interceptor - Handle common errors
+ */
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Unauthorized - redirect to login
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('user');
+      
+      // Only redirect if not already on login page
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+/**
+ * API Endpoints
+ */
+export const API_ENDPOINTS = {
+  // Auth
+  AUTH: {
+    LOGIN: '/auth/login',
+    GOOGLE_LOGIN: '/auth/google-login',  // ✅ Backend endpoint
+    LOGOUT: '/auth/logout',
+    REFRESH: '/auth/refresh',
+  },
+
+  // Events (Admin - Authenticated)
+  EVENTS: '/events',
+  EVENT_BY_ID: (id) => `/events/${id}`,
+
+  // Public Events (No Auth Required)
+  PUBLIC_EVENTS: '/publicevents',
+  PUBLIC_EVENT_BY_ID: (id) => `/publicevents/${id}`,
+
+  // Event Statuses
+  EVENT_STATUSES: '/eventstatuses',
+  EVENT_STATUS_BY_ID: (id) => `/eventstatuses/${id}`,
+
+  // Locations
+  LOCATIONS: '/locations',
+  LOCATION_BY_ID: (id) => `/locations/${id}`,
+
+  // Resources
+  RESOURCES: '/resources',
+  RESOURCE_BY_ID: (id) => `/resources/${id}`,
+
+  // External Locations
+  EXTERNAL_LOCATIONS: '/externallocations',
+  EXTERNAL_LOCATION_BY_ID: (id) => `/externallocations/${id}`,
+
+  // Users
+  USERS: '/users',
+  USER_BY_ID: (id) => `/users/${id}`,
+};
+
+export default apiClient;

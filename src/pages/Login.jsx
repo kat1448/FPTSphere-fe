@@ -1,109 +1,207 @@
-// src/pages/Login.jsx
-
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-import { useAuth } from "../contexts/AuthContext";
+import authService from "../services/authService";
 import "../assets/css/login.css";
 import logo from "../assets/images/logo.jpg";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/");
-    }
-  }, [isAuthenticated, navigate]);
+  /**
+   * Handle Google Login Success
+   * Auto-approve all Google users (no authorization check)
+   */
+  const handleGoogleLoginSuccess = async (credentialResponse) => {
+    setLoading(true);
+    setError("");
 
-  const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      const result = await login(credentialResponse.credential);
+      console.log("🔐 Google credential received");
+
+      const idToken = credentialResponse.credential;
+
+      if (!idToken) {
+        throw new Error("No credential received from Google");
+      }
+
+      console.log("✅ ID Token received, authenticating with backend...");
+
+      const result = await authService.loginWithGoogle(idToken);
 
       if (result.success) {
-        navigate("/");
-      } else {
-        alert(`Đăng nhập thất bại: ${result.message}`);
+        console.log("✅ Login successful:", result.user);
+        console.log("👤 User role:", result.user.roleName);
+
+        // ⭐ AUTO-APPROVE: Skip authorization check
+        // All Google users are automatically approved
+        
+        // Set flag for showing success message on home page
+        localStorage.setItem('justLoggedIn', 'true');
+        localStorage.setItem('loginUserName', result.user.fullName);
+        
+        // Determine redirect path based on role
+        let redirectPath;
+        
+        if (result.user.roleName === "Admin") {
+          redirectPath = "/admin/dashboard";
+        } else if (result.user.roleName === "Manager") {
+          redirectPath = "/manager/dashboard";
+        } else {
+          // Students and other users go to home page
+          redirectPath = "/";
+        }
+        
+        // Redirect immediately
+        navigate(redirectPath);
       }
     } catch (error) {
-      console.error("Login error:", error);
-      alert("Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại!");
+      console.error("❌ Google login error:", error);
+
+      // User-friendly error messages
+      if (error.message.includes("not found in database")) {
+        setError(
+          "❌ This Google account is not registered in our system. Please contact the administrator to get access."
+        );
+      } else {
+        setError(
+          error.message || "Failed to login with Google. Please try again."
+        );
+      }
+      setLoading(false);
     }
   };
 
-  const handleGoogleError = () => {
-    alert("Đăng nhập Google thất bại. Vui lòng thử lại!");
+  /**
+   * Handle Google Login Error
+   */
+  const handleGoogleLoginError = (error) => {
+    console.error("❌ Google OAuth error:", error);
+    setError("Failed to initialize Google login. Please try again.");
+    setLoading(false);
   };
 
   return (
     <div className="login-page">
-      <div className="login-background">
-        <div className="circle circle-1"></div>
-        <div className="circle circle-2"></div>
-        <div className="circle circle-3"></div>
-      </div>
-
       <div className="login-container">
-        <div className="login-left">
-          <div className="brand-section">
-            <img src={logo} alt="FPTSphere" className="brand-logo" />
-            <h1 className="brand-title">FPTSphere</h1>
-            <p className="brand-tagline">Empower Your Events</p>
-          </div>
-          
-          <div className="features-list">
-            <div className="feature-item">
-              <span className="feature-icon">🎯</span>
-              <div>
-                <h3>Smart Event Management</h3>
-                <p>Organize events efficiently</p>
-              </div>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">👥</span>
-              <div>
-                <h3>Team Collaboration</h3>
-                <p>Work together seamlessly</p>
-              </div>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">📊</span>
-              <div>
-                <h3>Analytics & Reports</h3>
-                <p>Track your success</p>
-              </div>
-            </div>
-          </div>
+        <div className="login-header">
+          <img src={logo} alt="FPTSphere" className="login-logo" />
+          <h2>Welcome to FPTSphere 👋</h2>
+          <p>Sign in with your Google account to continue</p>
         </div>
 
-        <div className="login-right">
-          <div className="login-card">
-            <div className="login-header">
-              <h2>Welcome Back! 👋</h2>
-              <p>Sign in with your Google account to continue</p>
-            </div>
-
-            <div className="google-login-wrapper">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={handleGoogleError}
-                useOneTap={false}
-                theme="outline"
-                size="large"
-                text="continue_with"
-                shape="rectangular"
-                logo_alignment="left"
-              />
-            </div>
-
-            <div className="login-footer">
-              <p>🔒 Secure authentication via Google OAuth 2.0</p>
-              <p className="note">Only authorized FPT University accounts can access</p>
-            </div>
+        {/* Error Message */}
+        {error && (
+          <div
+            style={{
+              padding: "1rem",
+              marginBottom: "1.5rem",
+              background: "linear-gradient(135deg, #fee2e2, #fecaca)",
+              border: "2px solid #ef4444",
+              borderRadius: "0.75rem",
+              color: "#991b1b",
+              fontSize: "0.875rem",
+              textAlign: "left",
+              lineHeight: "1.5",
+              boxShadow: "0 4px 12px rgba(239, 68, 68, 0.3)"
+            }}
+          >
+            {error}
           </div>
+        )}
+
+        {/* Google Login Section */}
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '1rem',
+          marginTop: '2rem'
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center',
+            opacity: loading ? 0.6 : 1,
+            pointerEvents: loading ? 'none' : 'auto',
+            width: '100%'
+          }}>
+            <GoogleLogin
+              onSuccess={handleGoogleLoginSuccess}
+              onError={handleGoogleLoginError}
+              useOneTap={false}
+              theme="outline"
+              size="large"
+              text="signin_with"
+              shape="rectangular"
+              width="384"
+            />
+          </div>
+
+          {loading && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              color: '#2563eb',
+              fontSize: '0.875rem',
+              fontWeight: '600'
+            }}>
+              <span
+                style={{
+                  display: "inline-block",
+                  width: "16px",
+                  height: "16px",
+                  border: "2px solid #dbeafe",
+                  borderTop: "2px solid #2563eb",
+                  borderRadius: "50%",
+                  animation: "spin 0.8s linear infinite",
+                }}
+              />
+              Signing in with Google...
+            </div>
+          )}
+        </div>
+
+        {/* Info section */}
+        <div style={{
+          marginTop: '2rem',
+          padding: '1rem',
+          backgroundColor: '#f0f9ff',
+          border: '1px solid #bfdbfe',
+          borderRadius: '0.75rem',
+          fontSize: '0.875rem',
+          color: '#1e40af',
+          textAlign: 'center'
+        }}>
+          <p style={{ margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '1.2rem' }}>🔒</span>
+            <span>Secure authentication powered by Google</span>
+          </p>
         </div>
       </div>
+
+      {/* Animations */}
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          
+          @keyframes slideDown {
+            0% { 
+              opacity: 0; 
+              transform: translateY(-10px); 
+            }
+            100% { 
+              opacity: 1; 
+              transform: translateY(0); 
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };

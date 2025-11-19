@@ -1,19 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../assets/css/header.css";
 import logo from "../assets/images/logo.jpg"; 
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import authService from "../services/authService";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout } = useAuth();
+
+  useEffect(() => {
+    const checkAuth = () => {
+      if (authService.isAuthenticated()) {
+        setUser(authService.getCurrentUser());
+      } else {
+        setUser(null);
+      }
+    };
+
+    checkAuth();
+
+    window.addEventListener('storage', checkAuth);
+  
+    window.addEventListener('auth-change', checkAuth);
+
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+      window.removeEventListener('auth-change', checkAuth);
+    };
+  }, []);
 
   const handleLogout = () => {
-    if (window.confirm('Bạn có chắc muốn đăng xuất?')) {
-      logout();
-      setIsOpen(false);
-      navigate('/login');
+    authService.logout();
+    setUser(null);
+    window.dispatchEvent(new Event('auth-change'));
+  };
+
+  const handleDashboardClick = () => {
+    if (user?.roleName === "Admin") {
+      navigate("/admin/dashboard");
+    } else if (user?.roleName === "Manager") {
+      navigate("/manager/dashboard");
+    } else {
+      navigate("/");
     }
   };
 
@@ -25,29 +54,42 @@ const Header = () => {
           <h1>FPTSphere</h1>
         </div>
 
-        {/* Navigation */}
         <nav className={`nav ${isOpen ? "open" : ""}`}>
           <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="#">Events</a></li>
+            <li><a href="/event">Events</a></li>
             <li><a href="#">Features</a></li>
             <li><a href="#">About</a></li>
             <li><a href="#">Contact</a></li>
           </ul>
         </nav>
 
-        {/* Right section - Auth */}
         <div className="right-section">
-          {isAuthenticated && user ? (
-            <div className="user-info">
-              <span className="user-greeting">👋</span>
-              <span className="user-name">{user.fullName}</span>
-              <span className="user-role">({user.roleName})</span>
-              <button onClick={handleLogout} className="btn-logout">
-                Đăng xuất
+          {user ? (
+            // Logged in: Show user name + logout
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '1rem' 
+            }}>
+              <div 
+                className="user-info-btn"
+                onClick={handleDashboardClick}
+              >
+                <span style={{ fontSize: '1.2rem' }}></span>
+                <span className="user-name">
+                  {user.fullName}
+                </span>
+              </div>
+              <button 
+                onClick={handleLogout}
+                className="btn-logout"
+              >
+                Logout
               </button>
             </div>
           ) : (
+            // Not logged in: Show sign in button
             <Link to="/login" className="btn-login">
               Sign In
             </Link>
