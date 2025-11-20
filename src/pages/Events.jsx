@@ -78,7 +78,7 @@ const Events = () => {
     <div className="events-page">
       {/* Banner */}
       <div className="events-banner">
-        <h1>Discover Exciting Events ✨</h1>
+        <h1>Discover Exciting Events</h1>
         <p>Explore what’s happening across FPTSphere — learn, connect, and grow.</p>
       </div>
 

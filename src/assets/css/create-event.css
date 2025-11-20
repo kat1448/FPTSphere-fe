@@ -1,0 +1,344 @@
+/* PAGE WRAPPER */
+.create-event-container {
+  padding-top: 160px;
+  padding-bottom: 100px;
+  background: #eef4ff;
+  min-height: 100vh;
+}
+
+/* TITLE */
+.ce-title {
+  text-align: center;
+  font-size: 2.3rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 40px;
+}
+
+/* STEPPER */
+.ce-stepper {
+  max-width: 900px;
+  margin: 0 auto 40px;
+}
+
+.ce-progress-line {
+  width: 100%;
+  height: 4px;
+  background: #dbeafe;
+  border-radius: 4px;
+  position: relative;
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.ce-progress-fill {
+  background: #2563eb;
+  height: 100%;
+  transition: 0.3s ease;
+}
+
+/* STEPPER CIRCLES */
+.ce-step-list {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ce-step-item {
+  text-align: center;
+  color: #94a3b8;
+  font-weight: 500;
+  width: 20%;
+}
+
+.ce-step-item span {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.9rem;
+}
+
+.ce-step-item .ce-step-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  font-weight: 700;
+  color: #1e3a8a;
+  transition: 0.3s ease;
+}
+
+.ce-step-item.active .ce-step-circle {
+  background: #2563eb;
+  color: white;
+}
+
+.ce-step-item.done .ce-step-circle {
+  background: #1e40af;
+  color: white;
+}
+
+/* FORM CARD */
+.ce-card {
+  max-width: 900px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 18px;
+  padding: 40px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  animation: fadeUp 0.4s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* FORM FIELDS */
+.ce-field {
+  margin-bottom: 24px;
+}
+
+.ce-field label {
+  font-weight: 600;
+  color: #1e3a8a;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.ce-field input,
+.ce-field textarea {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc;
+  font-size: 1rem;
+  transition: 0.25s;
+}
+
+.ce-field input:focus,
+.ce-field textarea:focus {
+  border-color: #2563eb;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.ce-field textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+/* GRID */
+.ce-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 36px 32px;
+  margin-top: 10px;
+}
+
+
+/* ACTIONS */
+.ce-actions {
+  margin-top: 30px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.btn-outline,
+.btn-primary {
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.btn-outline {
+  background: white;
+  border: 1px solid #2563eb;
+  color: #2563eb;
+}
+
+.btn-outline:hover {
+  background: #e0eaff;
+}
+
+.btn-primary {
+  background: #2563eb;
+  border: none;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1e40af;
+}
+
+/* RESPONSIVE */
+@media(max-width: 768px){
+  .ce-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ce-subevent-item .btn-outline {
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-weight: 500;
+  background: white;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  transition: 0.25s;
+}
+
+.ce-subevent-item .btn-outline:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #b91c1c;
+}
+
+
+/* ----------------- RESOURCES PAGE ----------------- */
+.grid3 {
+  display: grid;
+  grid-template-columns: 220px 1fr 220px;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.card.sticky {
+  position: sticky;
+  top: 20px;
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.sublist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.subitem {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.subitem.active {
+  background: #2563eb;
+  color: #fff;
+}
+
+.subitem:hover {
+  background: #e2e8f0;
+}
+
+/* TABLE */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.table th,
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.table th {
+  background: #f1f5f9;
+  font-weight: 600;
+}
+
+.row:hover {
+  background: #f9fafb;
+}
+
+.link {
+  color: #ef4444;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.link:hover {
+  color: #b91c1c;
+}
+
+/* SUMMARY */
+.sum h3 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  color: #1e3a8a;
+}
+
+.sum .kv {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 10px;
+  column-gap: 10px;
+  font-size: 0.95rem;
+}
+
+.sum .k {
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* TOOLBAR BUTTONS INSIDE RESOURCES */
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.toolbar .btn {
+  margin-left: 10px;
+}
+
+.btn.acc {
+  background: #10b981;
+  border: none;
+  color: white;
+  font-weight: 600;
+}
+
+.btn.acc:hover {
+  background: #059669;
+}
+
+/* SCROLLBAR FOR SUBLIST */
+.sublist::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sublist::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.sublist::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+/* RESPONSIVE */
+@media(max-width: 992px){
+  .grid3 {
+    grid-template-columns: 1fr;
+  }
+  .card.sticky {
+    position: relative;
+    top: 0;
+  }
+}

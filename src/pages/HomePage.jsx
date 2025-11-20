@@ -7,7 +7,6 @@ import Introduction from "../components/Introduction"
 import FeaturedEvents from "../components/FeaturedEvents";
 import UpcomingEvents from "../components/UpcomingEvents";
 
-
 const HomePage = () => {
   return (
     <>
