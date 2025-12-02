@@ -422,6 +422,9 @@ const EventDetailV2 = () => {
                           <div className="meta-item-v2">
                             <span className="meta-icon">📍</span>
                             <span>{subEvent.locationName}</span>
+                              {subEvent.building && ` - Campus ${subEvent.building}`}
+                              {subEvent.roomNumber && ` - Room ${subEvent.roomNumber}`}
+
                           </div>
                         )}
 

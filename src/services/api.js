@@ -70,6 +70,11 @@ export const API_ENDPOINTS = {
   PUBLIC_EVENTS: '/publicevents',
   PUBLIC_EVENT_BY_ID: (id) => `/publicevents/${id}`,
 
+ // 🔹 Event Manager (EM)
+  MY_EVENTS: '/events/my',
+  MY_EVENTS_OVERVIEW: '/events/my/overview',
+  MY_EVENTS_CALENDAR: '/events/my/calendar',
+
   // Event Statuses
   EVENT_STATUSES: '/eventstatuses',
   EVENT_STATUS_BY_ID: (id) => `/eventstatuses/${id}`,

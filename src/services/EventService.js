@@ -257,6 +257,88 @@ class EventService {
       throw new Error('Failed to search events');
     }
   }
+    /**
+   * ========================================
+   * EVENT MANAGER (EM) API
+   * ========================================
+   */
+
+  /**
+   * Get overview statistics for current EM
+   * (tổng quan để hiển thị 4 cards trên dashboard)
+   */
+  async getMyEventsOverview() {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.MY_EVENTS_OVERVIEW);
+
+      console.log("📊 EM Overview response:", response.data);
+
+      if (response.data.success) {
+        return response.data.data;
+      }
+
+      throw new Error(
+        response.data.message || "Failed to load event manager overview"
+      );
+    } catch (error) {
+      console.error("❌ Get EM overview error:", error);
+      throw new Error(
+        error.response?.data?.message ||
+          "Failed to load event manager overview"
+      );
+    }
+  }
+
+  /**
+   * Get events managed by current EM
+   * (dùng cho bảng 'Sự kiện đang quản lý')
+   */
+  async getMyEvents(params = {}) {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.MY_EVENTS, { params });
+
+      console.log("📂 EM Events response:", response.data);
+
+      if (response.data.success) {
+        const result = response.data.data;
+
+        // Nếu backend trả dạng { data: [], totalRecords, ... }
+        if (result && Array.isArray(result.data)) {
+          return result.data;
+        }
+
+        // Nếu backend trả thẳng mảng []
+        if (Array.isArray(result)) {
+          return result;
+        }
+
+        return [];
+      }
+
+      throw new Error(response.data.message || "Failed to load my events");
+    } catch (error) {
+      console.error("❌ Get EM events error:", error);
+      throw new Error(
+        error.response?.data?.message || "Failed to load my events"
+      );
+    }
+  }
+  async getMyManagedEvents(params = {}) {
+  try {
+    const response = await apiClient.get(API_ENDPOINTS.MY_EVENTS, { params });
+
+    if (response.data.success) {
+      return response.data.data.data; // data.data = mảng sự kiện
+    }
+
+    throw new Error(response.data.message || "Failed to load events");
+  } catch (err) {
+    console.error("❌ Error getMyManagedEvents:", err);
+    throw err;
+  }
+}
+
+
 
   /**
    * Filter events by category/type

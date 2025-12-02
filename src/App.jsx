@@ -6,10 +6,10 @@ import Home from "./pages/HomePage";
 import Login from "./pages/Login";
 import Event from "./pages/Events";
 import EventDetail from './pages/EventDetail';
-
 // Dashboard imports (create these files)
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import ManagerDashboard from './pages/EventManager/ManagerDashboard';
+import CreateEventWizard from "./pages/EventManager/CreateEventWizard";
 
 // Protected Route wrapper
 import ProtectedRoute from './components/ProtectedRoute';
@@ -49,11 +49,19 @@ function App() {
           <Route 
             path="/manager/dashboard" 
             element={
-              <ProtectedRoute requiredRole="Manager">
+              <ProtectedRoute requiredRole="Event Manager">
                 <ManagerDashboard />
               </ProtectedRoute>
             } 
           />
+            <Route
+    path="/manager/events/create"
+    element={
+      <ProtectedRoute requiredRole="Event Manager">
+        <CreateEventWizard />
+      </ProtectedRoute>
+    }
+  />
 
           {/* Catch all - redirect to home */}
           <Route path="*" element={<Navigate to="/" replace />} />

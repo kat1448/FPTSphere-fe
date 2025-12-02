@@ -47,7 +47,7 @@ const Login = () => {
         
         if (result.user.roleName === "Admin") {
           redirectPath = "/admin/dashboard";
-        } else if (result.user.roleName === "Manager") {
+        } else if (result.user.roleName === "Event Manager") {
           redirectPath = "/manager/dashboard";
         } else {
           // Students and other users go to home page
