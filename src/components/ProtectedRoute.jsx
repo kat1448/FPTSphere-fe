@@ -1,45 +1,32 @@
-import { Navigate } from 'react-router-dom';
-import authService from '../services/authService';
+import { Navigate, useLocation } from "react-router-dom";
+import authService from "../services/authService";
 
-/**
- * Protected Route Component
- * Checks if user is authenticated and optionally if they have required role
- */
-const ProtectedRoute = ({ children, requiredRole }) => {
-  // Check if user is authenticated
+const ProtectedRoute = ({ children, allowedRoles, requiredRole }) => {
+  const location = useLocation();
+
   const isAuthenticated = authService.isAuthenticated();
-  
   if (!isAuthenticated) {
-    // Not logged in, redirect to login page
-    console.log('❌ Not authenticated, redirecting to login');
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
-  // If no specific role required, just check authentication
-  if (!requiredRole) {
-    console.log('✅ Authenticated, no role required');
-    return children;
+  const userRole = authService.getUserRole(); // ví dụ: 'Admin' | 'Staff' | 'Event Manager'
+
+  const rolesToCheck =
+    (Array.isArray(allowedRoles) && allowedRoles.length > 0
+      ? allowedRoles
+      : requiredRole
+      ? [requiredRole]
+      : null);
+
+  if (!rolesToCheck) return children;
+
+  if (!rolesToCheck.includes(userRole)) {
+    if (userRole === "Admin") return <Navigate to="/admin/dashboard" replace />;
+    if (userRole === "Event Manager") return <Navigate to="/manager/dashboard" replace />;
+    if (userRole === "Staff") return <Navigate to="/staff/dashboard" replace />;
+    return <Navigate to="/" replace />;
   }
 
-  // Check if user has required role
-  const userRole = authService.getUserRole();
-  
-  if (userRole !== requiredRole) {
-    // User doesn't have required role, redirect to their appropriate dashboard
-    console.log(`❌ User role "${userRole}" does not match required role "${requiredRole}"`);
-    
-    // Redirect based on actual role
-    if (userRole === 'Admin') {
-      return <Navigate to="/admin/dashboard" replace />;
-    } else if (userRole === 'Event Manager') {
-      return <Navigate to="/manager/dashboard" replace />;
-    } else {
-      return <Navigate to="/dashboard" replace />;
-    }
-  }
-
-  // User is authenticated and has correct role
-  console.log(`✅ User has required role: ${requiredRole}`);
   return children;
 };
 
