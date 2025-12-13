@@ -12,7 +12,7 @@ import EventDetail from "./pages/EventDetail";
 
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import ManagerDashboard from "./pages/EventManager/ManagerDashboard";
-import CreateEventWizard from "./pages/EventManager/CreateEventWizard";
+import CreateEventWizard from "./pages/EventManager/create-event/CreateEventWizard";
 // import StaffDashboard from "./pages/Staff/StaffDashboard";
 
 function App() {
