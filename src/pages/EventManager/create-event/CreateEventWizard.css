@@ -1,0 +1,196 @@
+/* ===== Wizard theme giống Dashboard (light) ===== */
+
+.cew-wrap{
+  min-height: calc(100vh - 80px);
+  padding: 18px;
+  background: #f5f7fb;            /* giống nền dashboard */
+  color: #0f172a;
+}
+
+.cew-title{
+  font-size: 28px;
+  font-weight: 950;
+  margin: 0 auto 10px;
+  max-width: 1020px;
+}
+
+/* Card giống dashboard */
+.cew-card{
+  max-width: 1020px;
+  margin: 14px auto 0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 14px 40px rgba(2,6,23,.08);
+}
+
+/* Stepper giống dashboard */
+.cew-stepper{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  margin: 6px auto 14px;
+  max-width: 1020px;
+  color: #64748b;
+}
+
+.cew-step{ display:flex; align-items:center; gap:10px; position:relative; }
+
+.cew-dot{
+  width:14px; height:14px; border-radius:999px;
+  background: #e5e7eb;
+  border: 1px solid #cbd5e1;
+}
+
+.cew-step.active .cew-dot{
+  background:#111827;              /* giống nút primary dashboard */
+  border-color:#111827;
+  box-shadow: 0 0 0 6px rgba(17,24,39,0.10);
+}
+
+.cew-step.done .cew-dot{
+  background:#22c55e;
+  border-color:#22c55e;
+}
+
+.cew-label{
+  font-weight:900;
+  font-size:13px;
+  white-space:nowrap;
+  color:#334155;
+}
+
+.cew-line{
+  width: 120px; height: 2px;
+  background: #e5e7eb;
+  border-radius: 99px;
+}
+
+/* Form */
+.cew-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.cew-field{ display:flex; flex-direction:column; gap:8px; }
+
+.cew-field label{
+  font-weight:900;
+  color: #334155;
+  font-size:13px;
+}
+
+.cew-input, .cew-textarea, .cew-select{
+  width:100%;
+  border-radius: 14px;
+  padding: 12px 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #0f172a;
+  outline: none;
+}
+
+.cew-input:focus, .cew-textarea:focus, .cew-select:focus{
+  border-color: rgba(37,99,235,0.45);
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.10);
+}
+
+.cew-textarea{ min-height: 110px; resize: vertical; }
+
+.cew-row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+.cew-actions{ display:flex; gap:12px; justify-content:flex-start; margin-top: 16px; }
+
+/* Buttons giống dashboard */
+.cew-btn{
+  border:none;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-weight: 900;
+  cursor:pointer;
+  font-size: 13px;
+}
+
+.cew-btn-ghost{
+  background: #f8fafc;
+  color:#0f172a;
+  border: 1px solid #e5e7eb;
+}
+
+.cew-btn-ghost:hover{ background:#f1f5f9; }
+
+.cew-btn-primary{
+  background:#111827;     /* primary giống dashboard */
+  color:#ffffff;
+  border: 1px solid #111827;
+}
+
+.cew-btn-primary:hover{ filter: brightness(1.06); }
+
+.cew-error{
+  margin-top: 10px;
+  color: #dc2626;
+  font-weight: 900;
+}
+
+.cew-note{
+  color: #64748b;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+/* modal (nếu bạn dùng ở step 2 sau này) */
+.cew-modal-backdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,23,0.45);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+}
+
+.cew-modal{
+  width: min(720px, 92vw);
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 18px 60px rgba(2,6,23,.18);
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .cew-grid{ grid-template-columns: 1fr; }
+  .cew-line{ width: 48px; }
+}
+/* ===== FIX: Step 1 không phải kéo xuống để thấy nút ===== */
+.cew-card{
+  padding-bottom: 70px; /* chừa chỗ cho action bar sticky */
+}
+
+.cew-actions-sticky{
+  position: sticky;
+  bottom: 0;
+  margin-top: 14px;
+  padding: 12px;
+  background: rgba(245,247,251,0.92);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid #e5e7eb;
+  border-radius: 14px;
+  display:flex;
+  gap:12px;
+  justify-content:flex-end;
+}
+
+/* Giảm độ cao textarea để gọn màn hình */
+.cew-textarea{
+  min-height: 90px;
+}
+
+/* Giảm khoảng trống tổng */
+.cew-wrap{ padding: 12px; }
+.cew-title{ font-size: 24px; margin-bottom: 6px; }
+.cew-stepper{ margin-bottom: 10px; }
+.cew-line{ width: 80px; }
+
