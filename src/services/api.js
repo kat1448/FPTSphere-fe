@@ -40,7 +40,7 @@ apiClient.interceptors.response.use(
       // Unauthorized - redirect to login
       localStorage.removeItem('access_token');
       localStorage.removeItem('user');
-      
+
       // Only redirect if not already on login page
       if (window.location.pathname !== '/login') {
         window.location.href = '/login';
@@ -65,12 +65,19 @@ export const API_ENDPOINTS = {
   // Events (Admin - Authenticated)
   EVENTS: '/events',
   EVENT_BY_ID: (id) => `/events/${id}`,
+  LIST_EVENTS_MYSELF: '/events/list-events-myself',
+  REGISTER_EVENT_BY_STUDENT: (eventID) => `/events/${eventID}/register`,
+  CANCEL_REGISTER_EVENT_BY_STUDENT: (eventID) => `/events/${eventID}/unregister`,
 
+
+  // staff 
+  EVENT_TASKS: '/EventTasks/my-tasks',
+  EVENT_TASK_BY_ID: (id) => `/EventTasks/${id}/status`,
   // Public Events (No Auth Required)
   PUBLIC_EVENTS: '/publicevents',
   PUBLIC_EVENT_BY_ID: (id) => `/publicevents/${id}`,
 
- // 🔹 Event Manager (EM)
+  // 🔹 Event Manager (EM)
   MY_EVENTS: '/events/my',
   MY_EVENTS_OVERVIEW: '/events/my/overview',
   MY_EVENTS_CALENDAR: '/events/my/calendar',

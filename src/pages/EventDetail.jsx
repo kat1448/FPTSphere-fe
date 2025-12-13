@@ -2,25 +2,30 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import eventService from "../services/EventService";
 import "../assets/css/event-detail.css";
+import { toast } from "react-toastify";
+import { QRCodeCanvas } from "qrcode.react";
 
 const EventDetailV2 = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showShareModal, setShowShareModal] = useState(false);
-  
+  // QR Code state
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [registrationData, setRegistrationData] = useState(null);
   // Registration state
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [selectedSubEvent, setSelectedSubEvent] = useState(null);
   const [registeredSubEvents, setRegisteredSubEvents] = useState(new Set());
   const [registeringSubEventId, setRegisteringSubEventId] = useState(null);
-  
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelingSubEvent, setCancelingSubEvent] = useState(null);
   // Filter state
-  const [selectedDay, setSelectedDay] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDay, setSelectedDay] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     loadEventDetails();
@@ -34,8 +39,8 @@ const EventDetailV2 = () => {
       const response = await eventService.getPublicEventById(id);
       setEvent(response);
     } catch (err) {
-      console.error('❌ Error loading event:', err);
-      setError(err.message || 'Failed to load event details');
+      console.error("❌ Error loading event:", err);
+      setError(err.message || "Failed to load event details");
     } finally {
       setLoading(false);
     }
@@ -43,12 +48,12 @@ const EventDetailV2 = () => {
 
   const loadUserRegistrations = async () => {
     try {
-      const stored = localStorage.getItem(`registered_events_${id}`);
-      if (stored) {
-        setRegisteredSubEvents(new Set(JSON.parse(stored)));
-      }
+      const response = await eventService.getEventByMySelf(); // API lấy events đã đăng ký
+      const registeredIds = new Set(response.map((item) => item.eventId));
+      setRegisteredSubEvents(registeredIds);
     } catch (err) {
-      console.error('Failed to load registrations:', err);
+      console.error("Failed to load registrations:", err);
+      setRegisteredSubEvents(new Set());
     }
   };
 
@@ -57,56 +62,92 @@ const EventDetailV2 = () => {
     setShowRegisterModal(true);
   };
 
+  const downloadQRCode = () => {
+    const canvas = document.querySelector(".qr-code-container canvas");
+    if (canvas) {
+      const url = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.download = `QR-${registrationData.eventName.replace(/\s+/g, "-")}-${
+        registrationData.attendanceId
+      }.png`;
+      link.href = url;
+      link.click();
+    }
+  };
+
+  // Track if registration was just successful, to show toast after closing QR modal
+  const [pendingRegistrationToast, setPendingRegistrationToast] =
+    useState(false);
+
   const confirmRegistration = async () => {
     if (!selectedSubEvent) return;
 
     try {
       setRegisteringSubEventId(selectedSubEvent.eventId);
-      
+
+      // GỌI API ĐĂNG KÝ
+      const response = await eventService.registerEvent(
+        selectedSubEvent.eventId
+      );
+
+      console.log("✅ Registration response:", response);
+
       const newRegistered = new Set(registeredSubEvents);
       newRegistered.add(selectedSubEvent.eventId);
       setRegisteredSubEvents(newRegistered);
-      
-      localStorage.setItem(
-        `registered_events_${id}`, 
-        JSON.stringify([...newRegistered])
-      );
-      
-      alert(`✅ Successfully registered for "${selectedSubEvent.eventName}"!`);
-      
+
+      setRegistrationData({
+        attendanceId: response.attendanceId,
+        eventId: response.eventId,
+        eventName: selectedSubEvent.eventName,
+        startTime: selectedSubEvent.startTime,
+        endTime: selectedSubEvent.endTime,
+        locationName: selectedSubEvent.locationName,
+      });
+
       setShowRegisterModal(false);
+      setShowQRModal(true);
       setSelectedSubEvent(null);
-      
+      setPendingRegistrationToast(true); // Mark to show toast after closing QR modal
     } catch (err) {
-      console.error('Registration failed:', err);
-      alert('❌ Registration failed. Please try again.');
+      console.error("❌ Registration failed:", err);
+      toast.error(
+        `❌ Registration failed: ${err.message || "Please try again."}`
+      );
     } finally {
       setRegisteringSubEventId(null);
     }
   };
 
-  const cancelRegistration = async (subEventId, subEventName) => {
-    if (!window.confirm(`Cancel registration for "${subEventName}"?`)) {
-      return;
-    }
+  const handleCancelClick = (subEventId, subEventName) => {
+    setCancelingSubEvent({ id: subEventId, name: subEventName });
+    setShowCancelModal(true);
+  };
+
+  const confirmCancelRegistration = async () => {
+    if (!cancelingSubEvent) return;
 
     try {
-      setRegisteringSubEventId(subEventId);
-      
-      const newRegistered = new Set(registeredSubEvents);
-      newRegistered.delete(subEventId);
-      setRegisteredSubEvents(newRegistered);
-      
-      localStorage.setItem(
-        `registered_events_${id}`, 
-        JSON.stringify([...newRegistered])
+      setRegisteringSubEventId(cancelingSubEvent.id);
+      const response = await eventService.cancelEventRegistration(
+        cancelingSubEvent.id
       );
-      
-      alert(`✅ Registration cancelled for "${subEventName}"`);
-      
+      console.log("✅ Cancellation response:", response);
+
+      const newRegistered = new Set(registeredSubEvents);
+      newRegistered.delete(cancelingSubEvent.id);
+      setRegisteredSubEvents(newRegistered);
+
+      toast.success(
+        `Successfully cancelled registration for "${cancelingSubEvent.name}"`
+      );
+      setShowCancelModal(false);
+      setCancelingSubEvent(null);
     } catch (err) {
-      console.error('Cancellation failed:', err);
-      alert('❌ Cancellation failed. Please try again.');
+      console.error("❌ Cancellation failed:", err);
+      toast.error(
+        "Cancellation failed: You have already checked in and cannot cancel your registration"
+      );
     } finally {
       setRegisteringSubEventId(null);
     }
@@ -114,100 +155,103 @@ const EventDetailV2 = () => {
 
   const isSubEventFull = (subEvent) => {
     if (!subEvent.expectedAttendees) return false;
-    const mockRegisteredCount = Math.floor(subEvent.expectedAttendees * 0.8);
-    return mockRegisteredCount >= subEvent.expectedAttendees;
+    const currentCount = subEvent.currentAttendees || 0; // Lấy từ API
+    return currentCount >= subEvent.expectedAttendees;
   };
 
   const getAvailableSlots = (subEvent) => {
     if (!subEvent.expectedAttendees) return null;
-    const mockRegisteredCount = Math.floor(subEvent.expectedAttendees * 0.8);
-    const available = subEvent.expectedAttendees - mockRegisteredCount;
+    const currentCount = subEvent.currentAttendees || 0; // Lấy từ API
+    const available = subEvent.expectedAttendees - currentCount;
     return Math.max(0, available);
   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   const formatTime = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: true
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
     });
   };
 
   const formatDateShort = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
     });
   };
 
   // Get unique days from sub-events
   const getEventDays = () => {
     if (!event?.subEvents) return [];
-    
-    const days = [...new Set(event.subEvents.map(se => 
-      new Date(se.startTime).toDateString()
-    ))];
-    
+
+    const days = [
+      ...new Set(
+        event.subEvents.map((se) => new Date(se.startTime).toDateString())
+      ),
+    ];
+
     return days.sort((a, b) => new Date(a) - new Date(b));
   };
 
   // Filter sub-events
   const getFilteredSubEvents = () => {
     if (!event?.subEvents) return [];
-    
+
     let filtered = event.subEvents;
-    
+
     // Filter by day
-    if (selectedDay !== 'all') {
-      filtered = filtered.filter(se => 
-        new Date(se.startTime).toDateString() === selectedDay
+    if (selectedDay !== "all") {
+      filtered = filtered.filter(
+        (se) => new Date(se.startTime).toDateString() === selectedDay
       );
     }
-    
+
     // Filter by search term
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(se =>
-        se.eventName.toLowerCase().includes(term) ||
-        se.description?.toLowerCase().includes(term) ||
-        se.locationName?.toLowerCase().includes(term)
+      filtered = filtered.filter(
+        (se) =>
+          se.eventName.toLowerCase().includes(term) ||
+          se.description?.toLowerCase().includes(term) ||
+          se.locationName?.toLowerCase().includes(term)
       );
     }
-    
+
     // Sort by start time
-    return filtered.sort((a, b) => 
-      new Date(a.startTime) - new Date(b.startTime)
+    return filtered.sort(
+      (a, b) => new Date(a.startTime) - new Date(b.startTime)
     );
   };
 
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href);
-    alert('Link copied! 📋');
+    alert("Link copied! 📋");
   };
 
   // Get sub-event image (could be from backend or use placeholder)
   const getSubEventImage = (subEvent) => {
     // TODO: Get from subEvent.bannerUrl when available
     const images = [
-      'https://images.unsplash.com/photo-1540575467063-178a50c2df87',
-      'https://images.unsplash.com/photo-1505373877841-8d25f7d46678',
-      'https://images.unsplash.com/photo-1475721027785-f74eccf877e2',
-      'https://images.unsplash.com/photo-1591115765373-5207764f72e7',
-      'https://images.unsplash.com/photo-1528605248644-14dd04022da1'
+      "https://images.unsplash.com/photo-1540575467063-178a50c2df87",
+      "https://images.unsplash.com/photo-1505373877841-8d25f7d46678",
+      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2",
+      "https://images.unsplash.com/photo-1591115765373-5207764f72e7",
+      "https://images.unsplash.com/photo-1528605248644-14dd04022da1",
     ];
-    
+
     const index = subEvent.eventId % images.length;
     return `${images[index]}?auto=format&fit=crop&w=800&q=80`;
   };
@@ -228,8 +272,8 @@ const EventDetailV2 = () => {
       <div className="event-detail-v2">
         <div className="error-container">
           <h2>😢 Event Not Found</h2>
-          <p>{error || 'This event may have been removed.'}</p>
-          <button onClick={() => navigate('/events')} className="btn-back">
+          <p>{error || "This event may have been removed."}</p>
+          <button onClick={() => navigate("/events")} className="btn-back">
             ← Back to Events
           </button>
         </div>
@@ -245,16 +289,19 @@ const EventDetailV2 = () => {
   return (
     <div className="event-detail-v2">
       {/* Back Button */}
-      <button onClick={() => navigate('/events')} className="back-link-v2">
+      <button onClick={() => navigate("/events")} className="back-link-v2">
         ← Back to Events
       </button>
 
       {/* Hero Section - Main Event */}
       <div className="hero-section-v2">
-        <div 
-          className="hero-banner-v2" 
+        <div
+          className="hero-banner-v2"
           style={{
-            backgroundImage: `url(${event.bannerUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1920&q=80'})`
+            backgroundImage: `url(${
+              event.bannerUrl ||
+              "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1920&q=80"
+            })`,
           }}
         >
           <div className="hero-overlay-v2">
@@ -280,7 +327,10 @@ const EventDetailV2 = () => {
         {event.description && (
           <div className="hero-description">
             <p>{event.description}</p>
-            <button onClick={() => setShowShareModal(true)} className="btn-share-inline">
+            <button
+              onClick={() => setShowShareModal(true)}
+              className="btn-share-inline"
+            >
               📤 Share Event
             </button>
           </div>
@@ -293,18 +343,21 @@ const EventDetailV2 = () => {
           <div className="registration-info">
             <h3>📝 Your Registration Status</h3>
             <p>
-              You've registered for <strong>{registeredCount}</strong> out of <strong>{totalSessions}</strong> sessions
+              You've registered for <strong>{registeredCount}</strong> out of{" "}
+              <strong>{totalSessions}</strong> sessions
             </p>
             <div className="progress-bar-v2">
-              <div 
-                className="progress-fill-v2" 
+              <div
+                className="progress-fill-v2"
                 style={{ width: `${(registeredCount / totalSessions) * 100}%` }}
               ></div>
             </div>
           </div>
           {registeredCount === 0 && (
             <div className="registration-prompt">
-              <p>👇 Browse sessions below and register for what interests you!</p>
+              <p>
+                👇 Browse sessions below and register for what interests you!
+              </p>
             </div>
           )}
         </div>
@@ -316,7 +369,9 @@ const EventDetailV2 = () => {
           <div className="sessions-header-v2">
             <div className="header-title">
               <h2>🎯 Conference Sessions</h2>
-              <p>All sessions are independent - pick what you want to attend!</p>
+              <p>
+                All sessions are independent - pick what you want to attend!
+              </p>
             </div>
 
             {/* Filters & Search */}
@@ -332,15 +387,15 @@ const EventDetailV2 = () => {
                 />
               </div>
 
-              <select 
-                value={selectedDay} 
+              <select
+                value={selectedDay}
                 onChange={(e) => setSelectedDay(e.target.value)}
                 className="filter-select-v2"
               >
                 <option value="all">All Days ({totalSessions})</option>
                 {eventDays.map((day, idx) => {
-                  const count = event.subEvents.filter(se => 
-                    new Date(se.startTime).toDateString() === day
+                  const count = event.subEvents.filter(
+                    (se) => new Date(se.startTime).toDateString() === day
                   ).length;
                   return (
                     <option key={day} value={day}>
@@ -358,8 +413,11 @@ const EventDetailV2 = () => {
               <div className="no-results-v2">
                 <h3>😔 No sessions found</h3>
                 <p>Try adjusting your filters or search term</p>
-                <button 
-                  onClick={() => { setSearchTerm(''); setSelectedDay('all'); }}
+                <button
+                  onClick={() => {
+                    setSearchTerm("");
+                    setSelectedDay("all");
+                  }}
                   className="btn-reset-filters"
                 >
                   Clear Filters
@@ -370,17 +428,22 @@ const EventDetailV2 = () => {
                 const isRegistered = registeredSubEvents.has(subEvent.eventId);
                 const isFull = isSubEventFull(subEvent);
                 const availableSlots = getAvailableSlots(subEvent);
-                const isRegistering = registeringSubEventId === subEvent.eventId;
+                const isRegistering =
+                  registeringSubEventId === subEvent.eventId;
 
                 return (
-                  <div 
-                    key={subEvent.eventId} 
-                    className={`session-card-v2 ${isRegistered ? 'registered' : ''} ${isFull ? 'full' : ''}`}
+                  <div
+                    key={subEvent.eventId}
+                    className={`session-card-v2 ${
+                      isRegistered ? "registered" : ""
+                    } ${isFull ? "full" : ""}`}
                   >
                     {/* Card Image */}
-                    <div 
+                    <div
                       className="session-card-image-v2"
-                      style={{ backgroundImage: `url(${getSubEventImage(subEvent)})` }}
+                      style={{
+                        backgroundImage: `url(${getSubEventImage(subEvent)})`,
+                      }}
                     >
                       <div className="session-card-overlay-v2">
                         {isRegistered && (
@@ -389,9 +452,7 @@ const EventDetailV2 = () => {
                           </div>
                         )}
                         {isFull && !isRegistered && (
-                          <div className="full-badge-v2">
-                            🚫 Full
-                          </div>
+                          <div className="full-badge-v2">🚫 Full</div>
                         )}
                       </div>
                     </div>
@@ -403,11 +464,14 @@ const EventDetailV2 = () => {
                           📅 {formatDateShort(subEvent.startTime)}
                         </span>
                         <span className="session-time-badge-v2">
-                          🕐 {formatTime(subEvent.startTime)} - {formatTime(subEvent.endTime)}
+                          🕐 {formatTime(subEvent.startTime)} -{" "}
+                          {formatTime(subEvent.endTime)}
                         </span>
                       </div>
 
-                      <h3 className="session-card-title-v2">{subEvent.eventName}</h3>
+                      <h3 className="session-card-title-v2">
+                        {subEvent.eventName}
+                      </h3>
 
                       {subEvent.description && (
                         <p className="session-card-description-v2">
@@ -422,9 +486,10 @@ const EventDetailV2 = () => {
                           <div className="meta-item-v2">
                             <span className="meta-icon">📍</span>
                             <span>{subEvent.locationName}</span>
-                              {subEvent.building && ` - Campus ${subEvent.building}`}
-                              {subEvent.roomNumber && ` - Room ${subEvent.roomNumber}`}
-
+                            {subEvent.building &&
+                              ` - Campus ${subEvent.building}`}
+                            {subEvent.roomNumber &&
+                              ` - Room ${subEvent.roomNumber}`}
                           </div>
                         )}
 
@@ -436,14 +501,18 @@ const EventDetailV2 = () => {
                         )}
 
                         {availableSlots !== null && (
-                          <div className={`meta-item-v2 ${availableSlots < 10 ? 'warning' : ''}`}>
+                          <div
+                            className={`meta-item-v2 ${
+                              availableSlots < 10 ? "warning" : ""
+                            }`}
+                          >
                             <span className="meta-icon">
-                              {availableSlots > 0 ? '✅' : '⚠️'}
+                              {availableSlots > 0 ? "✅" : "⚠️"}
                             </span>
                             <span>
-                              {availableSlots > 0 
-                                ? `${availableSlots} slots left` 
-                                : 'Full'}
+                              {availableSlots > 0
+                                ? `${availableSlots} slots left`
+                                : "Full"}
                             </span>
                           </div>
                         )}
@@ -452,24 +521,33 @@ const EventDetailV2 = () => {
                       {/* CTA Button */}
                       <div className="session-card-actions-v2">
                         {isRegistered ? (
-                          <button 
-                            onClick={() => cancelRegistration(subEvent.eventId, subEvent.eventName)}
+                          <button
+                            onClick={() =>
+                              handleCancelClick(
+                                subEvent.eventId,
+                                subEvent.eventName
+                              )
+                            }
                             className="btn-cancel-v2"
                             disabled={isRegistering}
                           >
-                            {isRegistering ? '⏳ Processing...' : '❌ Cancel Registration'}
+                            {isRegistering
+                              ? "⏳ Processing..."
+                              : "❌ Cancel Registration"}
                           </button>
                         ) : isFull ? (
                           <button className="btn-full-v2" disabled>
                             🚫 Session Full
                           </button>
                         ) : (
-                          <button 
+                          <button
                             onClick={() => handleSubEventRegister(subEvent)}
                             className="btn-register-v2"
                             disabled={isRegistering}
                           >
-                            {isRegistering ? '⏳ Processing...' : '🎟️ Register for This Session'}
+                            {isRegistering
+                              ? "⏳ Processing..."
+                              : "🎟️ Register for This Session"}
                           </button>
                         )}
                       </div>
@@ -492,16 +570,27 @@ const EventDetailV2 = () => {
 
       {/* Registration Confirmation Modal */}
       {showRegisterModal && selectedSubEvent && (
-        <div className="modal-overlay-v2" onClick={() => setShowRegisterModal(false)}>
-          <div className="modal-content-v2" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="modal-overlay-v2"
+          onClick={() => setShowRegisterModal(false)}
+        >
+          <div
+            className="modal-content-v2"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-header-v2">
               <h3>🎟️ Confirm Registration</h3>
-              <button className="modal-close-v2" onClick={() => setShowRegisterModal(false)}>×</button>
+              <button
+                className="modal-close-v2"
+                onClick={() => setShowRegisterModal(false)}
+              >
+                ×
+              </button>
             </div>
-            
+
             <div className="modal-body-v2">
               <p className="modal-subtitle-v2">You're about to register for:</p>
-              
+
               <div className="registration-details-v2">
                 <h4>{selectedSubEvent.eventName}</h4>
                 <div className="detail-item-v2">
@@ -510,7 +599,10 @@ const EventDetailV2 = () => {
                 </div>
                 <div className="detail-item-v2">
                   <span className="detail-icon-v2">🕐</span>
-                  <span>{formatTime(selectedSubEvent.startTime)} - {formatTime(selectedSubEvent.endTime)}</span>
+                  <span>
+                    {formatTime(selectedSubEvent.startTime)} -{" "}
+                    {formatTime(selectedSubEvent.endTime)}
+                  </span>
                 </div>
                 {selectedSubEvent.locationName && (
                   <div className="detail-item-v2">
@@ -521,11 +613,76 @@ const EventDetailV2 = () => {
               </div>
 
               <div className="modal-actions-v2">
-                <button onClick={confirmRegistration} className="btn-confirm-v2">
+                <button
+                  onClick={confirmRegistration}
+                  className="btn-confirm-v2"
+                >
                   ✅ Confirm Registration
                 </button>
-                <button onClick={() => setShowRegisterModal(false)} className="btn-cancel-modal-v2">
+                <button
+                  onClick={() => setShowRegisterModal(false)}
+                  className="btn-cancel-modal-v2"
+                >
                   Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCancelModal && cancelingSubEvent && (
+        <div
+          className="modal-overlay-v2"
+          onClick={() => setShowCancelModal(false)}
+        >
+          <div
+            className="modal-content-v2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header-v2">
+              <h3>⚠️ Cancel Registration</h3>
+              <button
+                className="modal-close-v2"
+                onClick={() => setShowCancelModal(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="modal-body-v2">
+              <p className="modal-subtitle-v2">
+                Are you sure you want to cancel your registration for:
+              </p>
+
+              <div className="registration-details-v2">
+                <h4>{cancelingSubEvent.name}</h4>
+              </div>
+
+              <p
+                style={{
+                  color: "#ef4444",
+                  fontSize: "14px",
+                  marginTop: "16px",
+                }}
+              >
+                ⚠️ Note: If you've already checked in, you cannot cancel your
+                registration.
+              </p>
+
+              <div className="modal-actions-v2">
+                <button
+                  onClick={confirmCancelRegistration}
+                  className="btn-confirm-v2"
+                  style={{ backgroundColor: "#ef4444" }}
+                >
+                  ✅ Yes, Cancel Registration
+                </button>
+                <button
+                  onClick={() => setShowCancelModal(false)}
+                  className="btn-cancel-modal-v2"
+                >
+                  No, Keep Registration
                 </button>
               </div>
             </div>
@@ -535,25 +692,101 @@ const EventDetailV2 = () => {
 
       {/* Share Modal */}
       {showShareModal && (
-        <div className="modal-overlay-v2" onClick={() => setShowShareModal(false)}>
-          <div className="modal-content-v2" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="modal-overlay-v2"
+          onClick={() => setShowShareModal(false)}
+        >
+          <div
+            className="modal-content-v2"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-header-v2">
               <h3>📤 Share Event</h3>
-              <button className="modal-close-v2" onClick={() => setShowShareModal(false)}>×</button>
+              <button
+                className="modal-close-v2"
+                onClick={() => setShowShareModal(false)}
+              >
+                ×
+              </button>
             </div>
-            
+
             <div className="modal-body-v2">
               <p>Share "{event.eventName}" with others!</p>
-              
+
               <div className="copy-link-section-v2">
-                <input 
-                  type="text" 
-                  value={window.location.href} 
-                  readOnly 
+                <input
+                  type="text"
+                  value={window.location.href}
+                  readOnly
                   className="link-input-v2"
                 />
                 <button onClick={copyLink} className="btn-copy-v2">
                   📋 Copy
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* QR Code Modal */}
+      {showQRModal && registrationData && (
+        <div className="modal-overlay-v2" onClick={() => setShowQRModal(false)}>
+          <div
+            className="modal-content-v2 qr-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header-v2">
+              <h3>🎉 Registration Successful!</h3>
+              <button
+                className="modal-close-v2"
+                onClick={() => setShowQRModal(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="modal-body-v2 qr-modal-body">
+              <div className="qr-success-message">
+                <div className="success-icon">✅</div>
+                <h4>You're registered for:</h4>
+                <p className="event-name-large">{registrationData.eventName}</p>
+              </div>
+
+              {/* QR CODE */}
+              <div className="qr-code-container">
+                <QRCodeCanvas
+                  value={JSON.stringify({
+                    attendanceId: registrationData.attendanceId,
+                    eventId: registrationData.eventId,
+                    action: "checkin",
+                    timestamp: new Date().toISOString(),
+                  })}
+                  size={280}
+                  level="H"
+                  includeMargin={true}
+                  bgColor="#ffffff"
+                  fgColor="#000000"
+                />
+              </div>
+              <div className="qr-actions">
+                <button
+                  onClick={() => downloadQRCode()}
+                  className="btn-download-qr"
+                >
+                  💾 Download QR Code
+                </button>
+                <button
+                  onClick={() => {
+                    setShowQRModal(false);
+                    if (pendingRegistrationToast) {
+                      toast.success("Success! You are now registered");
+                      setPendingRegistrationToast(false);
+                    }
+                  }}
+                  className="btn-done-qr"
+                >
+                  Done
                 </button>
               </div>
             </div>

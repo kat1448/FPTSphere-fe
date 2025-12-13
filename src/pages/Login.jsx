@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-import authService from "../services/authService";
+import { useAuth } from "../contexts/AuthContext";
 import "../assets/css/login.css";
 import logo from "../assets/images/logo.jpg";
 
@@ -9,7 +9,7 @@ const Login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+  const { login } = useAuth();
   /**
    * Handle Google Login Success
    * Auto-approve all Google users (no authorization check)
@@ -29,7 +29,7 @@ const Login = () => {
 
       console.log("✅ ID Token received, authenticating with backend...");
 
-      const result = await authService.loginWithGoogle(idToken);
+      const result = await login(idToken);
 
       if (result.success) {
         console.log("✅ Login successful:", result.user);
@@ -37,23 +37,25 @@ const Login = () => {
 
         // ⭐ AUTO-APPROVE: Skip authorization check
         // All Google users are automatically approved
-        
+
         // Set flag for showing success message on home page
-        localStorage.setItem('justLoggedIn', 'true');
-        localStorage.setItem('loginUserName', result.user.fullName);
-        
+        localStorage.setItem("justLoggedIn", "true");
+        localStorage.setItem("loginUserName", result.user.fullName);
+
         // Determine redirect path based on role
         let redirectPath;
-        
+
         if (result.user.roleName === "Admin") {
           redirectPath = "/admin/dashboard";
         } else if (result.user.roleName === "Event Manager") {
           redirectPath = "/manager/dashboard";
+        } else if (result.user.roleName === "Staff") {
+          redirectPath = "/staff/dashboard";
         } else {
           // Students and other users go to home page
           redirectPath = "/";
         }
-        
+
         // Redirect immediately
         navigate(redirectPath);
       }
@@ -105,7 +107,7 @@ const Login = () => {
               fontSize: "0.875rem",
               textAlign: "left",
               lineHeight: "1.5",
-              boxShadow: "0 4px 12px rgba(239, 68, 68, 0.3)"
+              boxShadow: "0 4px 12px rgba(239, 68, 68, 0.3)",
             }}
           >
             {error}
@@ -113,20 +115,24 @@ const Login = () => {
         )}
 
         {/* Google Login Section */}
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '1rem',
-          marginTop: '2rem'
-        }}>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center',
-            opacity: loading ? 0.6 : 1,
-            pointerEvents: loading ? 'none' : 'auto',
-            width: '100%'
-          }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "1rem",
+            marginTop: "2rem",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              opacity: loading ? 0.6 : 1,
+              pointerEvents: loading ? "none" : "auto",
+              width: "100%",
+            }}
+          >
             <GoogleLogin
               onSuccess={handleGoogleLoginSuccess}
               onError={handleGoogleLoginError}
@@ -140,14 +146,16 @@ const Login = () => {
           </div>
 
           {loading && (
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              color: '#2563eb',
-              fontSize: '0.875rem',
-              fontWeight: '600'
-            }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                color: "#2563eb",
+                fontSize: "0.875rem",
+                fontWeight: "600",
+              }}
+            >
               <span
                 style={{
                   display: "inline-block",
@@ -165,18 +173,28 @@ const Login = () => {
         </div>
 
         {/* Info section */}
-        <div style={{
-          marginTop: '2rem',
-          padding: '1rem',
-          backgroundColor: '#f0f9ff',
-          border: '1px solid #bfdbfe',
-          borderRadius: '0.75rem',
-          fontSize: '0.875rem',
-          color: '#1e40af',
-          textAlign: 'center'
-        }}>
-          <p style={{ margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '1.2rem' }}>🔒</span>
+        <div
+          style={{
+            marginTop: "2rem",
+            padding: "1rem",
+            backgroundColor: "#f0f9ff",
+            border: "1px solid #bfdbfe",
+            borderRadius: "0.75rem",
+            fontSize: "0.875rem",
+            color: "#1e40af",
+            textAlign: "center",
+          }}
+        >
+          <p
+            style={{
+              margin: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "0.5rem",
+            }}
+          >
+            <span style={{ fontSize: "1.2rem" }}>🔒</span>
             <span>Secure authentication powered by Google</span>
           </p>
         </div>

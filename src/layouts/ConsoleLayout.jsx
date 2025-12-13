@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import authService from "../services/authService";
+import { useAuth } from "../contexts/AuthContext";
 import "../assets/css/console-layout.css";
 
 export default function ConsoleLayout() {
-  const user = authService.getCurrentUser();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [openUserMenu, setOpenUserMenu] = useState(false);
@@ -54,7 +54,10 @@ export default function ConsoleLayout() {
     return "Dashboard";
   }, [location.pathname]);
 
-  const onLogout = () => authService.logout();
+  const onLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <div className="console">

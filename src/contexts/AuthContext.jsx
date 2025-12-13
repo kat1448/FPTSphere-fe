@@ -1,8 +1,8 @@
 // src/contexts/AuthContext.jsx
 
-import { createContext, useContext, useState, useEffect } from 'react';
-import { authService } from '../services/auth.service';
-import { STORAGE_KEYS } from '../config/api.config';
+import { createContext, useContext, useState, useEffect } from "react";
+import { authService } from "../services/auth.service";
+import { STORAGE_KEYS } from "../config/api.config";
 
 const AuthContext = createContext(null);
 
@@ -16,14 +16,14 @@ export const AuthProvider = ({ children }) => {
       try {
         const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
         const userStr = localStorage.getItem(STORAGE_KEYS.USER);
-        
+
         if (token && userStr) {
           const savedUser = JSON.parse(userStr);
           setUser(savedUser);
           setIsAuthenticated(true);
         }
       } catch (error) {
-        console.error('Error loading user:', error);
+        console.error("Error loading user:", error);
         authService.logout();
       } finally {
         setLoading(false);
@@ -35,17 +35,18 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (idToken) => {
     try {
+      // Giả sử authService.loginWithGoogle trả về { success: true, user: userData }
       const result = await authService.loginWithGoogle(idToken);
-      
+
       if (result.success) {
         setUser(result.user);
         setIsAuthenticated(true);
-        return { success: true };
+        return { success: true, user: result.user };
       } else {
         return { success: false, message: result.message };
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       return { success: false, message: error.message };
     }
   };
@@ -61,22 +62,18 @@ export const AuthProvider = ({ children }) => {
     loading,
     isAuthenticated,
     login,
-    logout
+    logout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  
+
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
-  
+
   return context;
 };

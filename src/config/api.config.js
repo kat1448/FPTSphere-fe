@@ -17,7 +17,7 @@ export const API_ENDPOINTS = {
 // Storage Keys
 // ✅ FIXED - Use simple 'token' and 'user' keys
 export const STORAGE_KEYS = {
-  TOKEN: 'token',      // ← ĐỔI từ 'jwt_token' thành 'token'
+  TOKEN: 'access_token',      // ← ĐỔI từ 'jwt_token' thành 'token'
   USER: 'user'         // ← ĐỔI từ 'user_info' thành 'user'
 };
 
