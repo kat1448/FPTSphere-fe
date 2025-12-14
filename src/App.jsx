@@ -19,6 +19,8 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import ManagerDashboard from "./pages/EventManager/ManagerDashboard";
 import CreateEventWizard from "./pages/EventManager/create-event/CreateEventWizard";
 import StaffDashboard from "./pages/Staff/StaffDashboard";
+import SubEventManagement from "./pages/EventManager/Management_Sub_Event";
+import TaskManagement from "./pages/EventManager/TaskManagement";
 
 function App() {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -61,6 +63,9 @@ function App() {
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/manager/dashboard" element={<ManagerDashboard />} />
               <Route path="/manager/events/create" element={<CreateEventWizard />} />
+              <Route path="/manager/events/Sub-Event" element={<SubEventManagement />} />
+              <Route path="/manager/events/TaskManagement" element={<TaskManagement />} />
+
               <Route path="/staff/dashboard" element={<StaffDashboard />} />
             </Route>
 

@@ -16,7 +16,10 @@ export default function ConsoleLayout() {
     const name = (displayName || "").trim();
     if (!name) return "U";
     const parts = name.split(/\s+/);
-    return parts.map((p) => (p[0] || "").toUpperCase()).join("").slice(0, 2);
+    return parts
+      .map((p) => (p[0] || "").toUpperCase())
+      .join("")
+      .slice(0, 2);
   }, [displayName]);
 
   // ✅ Nav theo role (đúng string role bạn dùng: "Event Manager")
@@ -26,16 +29,63 @@ export default function ConsoleLayout() {
     const isEM = roleName === "Event Manager";
 
     const items = [
-      { to: isAdmin ? "/admin/dashboard" : isStaff ? "/staff/dashboard" : "/manager/dashboard", label: "Dashboard", icon: "📊", show: true },
+      {
+        to: isAdmin
+          ? "/admin/dashboard"
+          : isStaff
+          ? "/staff/dashboard"
+          : "/manager/dashboard",
+        label: "Dashboard",
+        icon: "📊",
+        show: true,
+      },
 
-      { to: "/manager/events", label: "Events", icon: "📅", show: isAdmin || isStaff || isEM },
-      { to: "/manager/events/create", label: "Create Event", icon: "➕", show: isAdmin || isEM },
+      {
+        to: "/manager/events",
+        label: "Events",
+        icon: "📅",
+        show: isAdmin || isStaff || isEM,
+      },
+      {
+        to: "/manager/events/create",
+        label: "Create Event",
+        icon: "➕",
+        show: isAdmin,
+      },
+      {
+        to: "/manager/events/TaskManagement",
+        label: "Management Task",
+        icon: "➕",
+        show: isAdmin || isEM,
+      },
 
-      { to: "/manager/locations", label: "Locations", icon: "📍", show: isAdmin || isStaff },
-      { to: "/manager/participants", label: "Participants", icon: "👥", show: isAdmin || isStaff || isEM },
+      {
+        to: "/manager/events/Sub-Event",
+        label: "Management Sub-Event",
+        icon: "➕",
+        show: isAdmin || isEM,
+      },
+
+      {
+        to: "/manager/locations",
+        label: "Locations",
+        icon: "📍",
+        show: isAdmin || isStaff,
+      },
+      {
+        to: "/manager/participants",
+        label: "Participants",
+        icon: "👥",
+        show: isAdmin || isStaff || isEM,
+      },
 
       { to: "/admin/users", label: "Users", icon: "🧩", show: isAdmin },
-      { to: "/admin/reports", label: "Reports", icon: "📈", show: isAdmin || isStaff },
+      {
+        to: "/admin/reports",
+        label: "Reports",
+        icon: "📈",
+        show: isAdmin || isStaff,
+      },
       { to: "/admin/settings", label: "Settings", icon: "⚙️", show: isAdmin },
     ];
 
@@ -65,7 +115,15 @@ export default function ConsoleLayout() {
       <aside className="console-sidebar">
         <button
           className="console-brand"
-          onClick={() => navigate(roleName === "Admin" ? "/admin/dashboard" : roleName === "Staff" ? "/staff/dashboard" : "/manager/dashboard")}
+          onClick={() =>
+            navigate(
+              roleName === "Admin"
+                ? "/admin/dashboard"
+                : roleName === "Staff"
+                ? "/staff/dashboard"
+                : "/manager/dashboard"
+            )
+          }
           type="button"
         >
           <div className="console-brand-logo">F</div>
@@ -114,7 +172,9 @@ export default function ConsoleLayout() {
         <header className="console-topbar">
           <div className="console-topbar-left">
             <div className="console-title">{pageTitle}</div>
-            <div className="console-subtitle">Workspace for Admin / Staff / Event Manager</div>
+            <div className="console-subtitle">
+              Workspace for Admin / Staff / Event Manager
+            </div>
           </div>
 
           <div className="console-topbar-right">
@@ -147,11 +207,22 @@ export default function ConsoleLayout() {
             </button>
 
             {openUserMenu && (
-              <div className="console-menu" onMouseLeave={() => setOpenUserMenu(false)}>
-                <button className="console-menu-item" type="button" onClick={() => navigate("/profile")}>
+              <div
+                className="console-menu"
+                onMouseLeave={() => setOpenUserMenu(false)}
+              >
+                <button
+                  className="console-menu-item"
+                  type="button"
+                  onClick={() => navigate("/profile")}
+                >
                   👤 Profile
                 </button>
-                <button className="console-menu-item" type="button" onClick={onLogout}>
+                <button
+                  className="console-menu-item"
+                  type="button"
+                  onClick={onLogout}
+                >
                   🚪 Logout
                 </button>
               </div>
