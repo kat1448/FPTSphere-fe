@@ -24,6 +24,8 @@ const Header = () => {
       navigate("/manager/dashboard");
     } else if (user?.roleName === "Staff") {
       navigate("/staff/dashboard");
+    } else if (user?.roleName === "Director") {
+      navigate("/director/dashboard");
     } else {
       navigate("/");
     }
