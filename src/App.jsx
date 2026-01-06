@@ -27,6 +27,7 @@ import StaffDashboard from "./pages/Staff/StaffDashboard";
 import DirectorLayout from "./layouts/DirectorLayout";
 import DirectorDashboard from "./pages/Director/DirectorDashboard";
 import PendingApprovals from "./pages/Director/PendingApprovals";
+import EventReview from "./pages/Director/EventReview";
 import OngoingEvents from "./pages/Director/OngoingEvents";
 import DirectorEventHistory from "./pages/Director/EventHistory";
 
@@ -87,6 +88,7 @@ function App() {
             >
               <Route path="/director/dashboard" element={<DirectorDashboard />} />
               <Route path="/director/events/approvals" element={<PendingApprovals />} />
+              <Route path="/director/events/review/:eventId" element={<EventReview />} />
               <Route path="/director/events/ongoing" element={<OngoingEvents />} />
               <Route path="/director/events/history" element={<DirectorEventHistory />} />
             </Route>

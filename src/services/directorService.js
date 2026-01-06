@@ -117,6 +117,21 @@ const directorService = {
       throw error;
     }
   },
+
+  /**
+   * Get sub-events for a parent event
+   * GET /api/events/{id}/subevents
+   */
+  getSubEvents: async (parentEventId) => {
+    try {
+      const response = await apiClient.get(`/events/${parentEventId}/subevents`);
+      console.log("📁 Sub-events response:", response.data);
+      return response.data?.data || [];
+    } catch (error) {
+      console.error("❌ Error fetching sub-events:", error);
+      throw error;
+    }
+  },
 };
 
 export default directorService;
