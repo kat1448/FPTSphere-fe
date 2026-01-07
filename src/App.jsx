@@ -16,9 +16,20 @@ import EventDetail from "./pages/EventDetail";
 import EventHistory from "./pages/EventHistory";
 
 import AdminDashboard from "./pages/Admin/AdminDashboard";
+
 import ManagerDashboard from "./pages/EventManager/ManagerDashboard";
 import CreateEventWizard from "./pages/EventManager/create-event/CreateEventWizard";
+import SubEventManagement from "./pages/EventManager/Management_Sub_Event";
+import TaskManagement from "./pages/EventManager/TaskManagement";
+
 import StaffDashboard from "./pages/Staff/StaffDashboard";
+
+import DirectorLayout from "./layouts/DirectorLayout";
+import DirectorDashboard from "./pages/Director/DirectorDashboard";
+import PendingApprovals from "./pages/Director/PendingApprovals";
+import EventReview from "./pages/Director/EventReview";
+import OngoingEvents from "./pages/Director/OngoingEvents";
+import DirectorEventHistory from "./pages/Director/EventHistory";
 
 function App() {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -61,7 +72,25 @@ function App() {
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/manager/dashboard" element={<ManagerDashboard />} />
               <Route path="/manager/events/create" element={<CreateEventWizard />} />
+              <Route path="/manager/events/Sub-Event" element={<SubEventManagement />} />
+              <Route path="/manager/events/TaskManagement" element={<TaskManagement />} />
+
               <Route path="/staff/dashboard" element={<StaffDashboard />} />
+            </Route>
+            
+            {/* ===== DIRECTOR CONSOLE ===== */}
+            <Route
+              element={
+                <ProtectedRoute allowedRoles={["Director"]}>
+                  <DirectorLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/director/dashboard" element={<DirectorDashboard />} />
+              <Route path="/director/events/approvals" element={<PendingApprovals />} />
+              <Route path="/director/events/review/:eventId" element={<EventReview />} />
+              <Route path="/director/events/ongoing" element={<OngoingEvents />} />
+              <Route path="/director/events/history" element={<DirectorEventHistory />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />

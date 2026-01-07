@@ -82,23 +82,49 @@ class EventService {
       if (response.data.success) {
         const result = response.data.data;
 
-        // Backend may return paginated data: { data: [...], totalRecords, page, ... }
+        // Backend trả về paginated data: { data: [...], totalRecords, page, pageSize, totalPages }
         if (result && result.data && Array.isArray(result.data)) {
-          console.log('✅ Extracted array from paginated response:', result.data);
-          return result.data;
+          console.log('✅ Paginated response:', result);
+
+          // Return cả object chứa pagination info
+          return {
+            data: result.data,
+            currentPage: result.page || 1,
+            pageSize: result.pageSize || 10,
+            totalItems: result.totalRecords || 0,
+            totalPages: result.totalPages || Math.ceil((result.totalRecords || 0) / (result.pageSize || 10))
+          };
         }
 
-        // Or direct array
+        // Hoặc direct array (fallback cho API không có pagination)
         if (Array.isArray(result)) {
           console.log('✅ Direct array response:', result);
-          return result;
+          return {
+            data: result,
+            currentPage: 1,
+            pageSize: result.length,
+            totalItems: result.length,
+            totalPages: 1
+          };
         }
 
         console.warn('⚠️ Unexpected response structure:', result);
-        return [];
+        return {
+          data: [],
+          currentPage: 1,
+          pageSize: 10,
+          totalItems: 0,
+          totalPages: 0
+        };
       }
 
-      return [];
+      return {
+        data: [],
+        currentPage: 1,
+        pageSize: 10,
+        totalItems: 0,
+        totalPages: 0
+      };
     } catch (error) {
       console.error('Get all events error:', error);
       throw new Error('Failed to fetch events');
@@ -211,7 +237,7 @@ class EventService {
       const response = await apiClient.post(API_ENDPOINTS.EVENTS, eventData);
 
       if (response.data.success) {
-        return response.data.data;
+        return response.data;
       }
 
       throw new Error('Failed to create event');
@@ -235,7 +261,7 @@ class EventService {
       );
 
       if (response.data.success) {
-        return response.data.data;
+        return response.data;
       }
 
       throw new Error('Failed to update event');
@@ -446,8 +472,205 @@ class EventService {
     }
   }
 
+  createSubEvent = async (parentID, subEventData) => {
+    try {
+      const response = await apiClient.post(
+        API_ENDPOINTS.Create_SubEvent(parentID),
+        subEventData
+      );
+      if (response.data.success) {
+        return response.data;
+      }
+      throw new Error('Failed to create sub-event');
+    } catch (error) {
+      console.error('Create sub-event error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to create sub-event');
+    }
+  };
+
+  getResources = async () => {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.RESOURCES);
+
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error('Failed to fetch resources');
+    } catch (error) {
+      console.error('Get resources error:', error);
+      throw new Error('Failed to fetch resources');
+    }
+  };
+
+  getAllLocations = async (params = {}) => {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.LOCATIONS, { params });
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error('Failed to fetch locations');
+    } catch (error) {
+      console.error('Get locations error:', error);
+      throw new Error('Failed to fetch locations');
+    }
+  };
+  getAllExternalLocations = async (params = {}) => {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.EXTERNAL_LOCATIONS, { params });
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error('Failed to fetch external locations');
+    } catch (error) {
+      console.error('Get external locations error:', error);
+      throw new Error('Failed to fetch external locations');
+    }
+  }
+
+  getSubEventsByParentID = async (parentID, params = {}) => {
+    try {
+      const response = await apiClient.get(
+        API_ENDPOINTS.SUB_EVENTS_BY_PARENT_ID(parentID),
+        { params }
+      );
+
+      console.log("🔍 Sub-events response:", response.data);
+
+      if (response.data.success) {
+        const result = response.data.data;
+
+        // 👉 Backend trả về dạng paginated
+        // { data: [...], totalRecords, page, pageSize, totalPages }
+        if (result && result.data && Array.isArray(result.data)) {
+          return {
+            data: result.data,
+            currentPage: result.page || 1,
+            pageSize: result.pageSize || 10,
+            totalItems: result.totalRecords || 0,
+            totalPages:
+              result.totalPages ||
+              Math.ceil(
+                (result.totalRecords || 0) / (result.pageSize || 10)
+              ),
+          };
+        }
+
+        // 👉 Fallback: backend trả array trực tiếp
+        if (Array.isArray(result)) {
+          return {
+            data: result,
+            currentPage: 1,
+            pageSize: result.length,
+            totalItems: result.length,
+            totalPages: 1,
+          };
+        }
+
+        console.warn("⚠️ Unexpected sub-events response:", result);
+      }
+
+      return {
+        data: [],
+        currentPage: 1,
+        pageSize: 10,
+        totalItems: 0,
+        totalPages: 0,
+      };
+    } catch (error) {
+      console.error("Get sub-events error:", error);
+      throw new Error("Failed to fetch sub-events");
+    }
+  };
+
+
+  getAllResources = async (params = {}) => {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.RESOURCES, { params });
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error('Failed to fetch resources');
+    } catch (error) {
+      console.error('Get resources error:', error);
+      throw new Error('Failed to fetch resources');
+    }
+  }
+
+  assignEventResources = async (eventId, resources) => {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.ASSIGN_EVENT_RESOURCES(eventId), resources);
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error('Failed to assign event resources');
+    } catch (error) {
+      console.error('Assign event resources error:', error);
+      throw new Error('Failed to assign event resources');
+    }
+  }
+  createExternalService = async (eventId, externalServiceData) => {
+    try {
+      const response = await apiClient.post(
+        API_ENDPOINTS.CREATE_EXTERNAL_SERVICE(eventId),
+        externalServiceData
+      );
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error('Failed to create external service');
+    } catch (error) {
+      console.error('Create external service error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to create external service');
+    }
+  };
+
+  updateSubEvent = async (subEventID, subEventData) => {
+    try {
+      const response = await apiClient.put(
+        API_ENDPOINTS.UPDATE_SUB_EVENT(subEventID),
+        subEventData
+      );
+      if (response.data.success) {
+        return response.data;
+      }
+      throw new Error('Failed to update sub-event');
+    } catch (error) {
+      console.error('Update sub-event error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to update sub-event');
+    }
+  };
+  updateAssignEventResources = async (eventId, resources) => {
+    try {
+      const response = await apiClient.put(API_ENDPOINTS.ASSIGN_EVENT_RESOURCES(eventId), resources);
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error('Failed to update assigned event resources');
+    } catch (error) {
+      console.error('Update assigned event resources error:', error);
+      throw new Error('Failed to update assigned event resources');
+    }
+  }
+  updateExternalService = async (eventId, externalServiceData) => {
+    try {
+      const response = await apiClient.put(
+        API_ENDPOINTS.UPDATE_EXTERNAL_SERVICE(eventId),
+        externalServiceData
+      );
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error('Failed to update external service');
+    }
+    catch (error) {
+      console.error('Update external service error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to update external service');
+    }
+  };
 
 }
+
+
 
 
 

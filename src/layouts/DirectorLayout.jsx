@@ -3,18 +3,18 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "../assets/css/console-layout.css";
 
-export default function ConsoleLayout() {
+export default function DirectorLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [openUserMenu, setOpenUserMenu] = useState(false);
 
-  const displayName = user?.fullName || "User";
-  const roleName = user?.roleName || "User";
+  const displayName = user?.fullName || "Director";
+  const roleName = user?.roleName || "Director";
 
   const initials = useMemo(() => {
     const name = (displayName || "").trim();
-    if (!name) return "U";
+    if (!name) return "D";
     const parts = name.split(/\s+/);
     return parts
       .map((p) => (p[0] || "").toUpperCase())
@@ -22,89 +22,37 @@ export default function ConsoleLayout() {
       .slice(0, 2);
   }, [displayName]);
 
-  // ✅ Nav theo role (đúng string role bạn dùng: "Event Manager")
-  const navItems = useMemo(() => {
-    const isAdmin = roleName === "Admin";
-    const isStaff = roleName === "Staff";
-    const isEM = roleName === "Event Manager";
-
-    const items = [
-      {
-        to: isAdmin
-          ? "/admin/dashboard"
-          : isStaff
-          ? "/staff/dashboard"
-          : "/manager/dashboard",
-        label: "Dashboard",
-        icon: "📊",
-        show: true,
-      },
-
-      {
-        to: "/manager/events",
-        label: "Events",
-        icon: "📅",
-        show: isAdmin || isStaff || isEM,
-      },
-      {
-        to: "/manager/events/create",
-        label: "Create Event",
-        icon: "➕",
-        show: isAdmin,
-      },
-      {
-        to: "/manager/events/TaskManagement",
-        label: "Management Task",
-        icon: "➕",
-        show: isAdmin || isEM,
-      },
-
-      {
-        to: "/manager/events/Sub-Event",
-        label: "Management Sub-Event",
-        icon: "➕",
-        show: isAdmin || isEM,
-      },
-
-      {
-        to: "/manager/locations",
-        label: "Locations",
-        icon: "📍",
-        show: isAdmin || isStaff,
-      },
-      {
-        to: "/manager/participants",
-        label: "Participants",
-        icon: "👥",
-        show: isAdmin || isStaff || isEM,
-      },
-
-      { to: "/admin/users", label: "Users", icon: "🧩", show: isAdmin },
-      {
-        to: "/admin/reports",
-        label: "Reports",
-        icon: "📈",
-        show: isAdmin || isStaff,
-      },
-      { to: "/admin/settings", label: "Settings", icon: "⚙️", show: isAdmin },
-    ];
-
-    return items.filter((x) => x.show);
-  }, [roleName]);
+  const navItems = [
+    {
+      to: "/director/dashboard",
+      label: "Dashboard",
+      icon: "📊",
+    },
+    {
+      to: "/director/events/approvals",
+      label: "Pending Approvals",
+      icon: "📋",
+    },
+    {
+      to: "/director/events/ongoing",
+      label: "Ongoing Events",
+      icon: "🟢",
+    },
+    {
+      to: "/director/events/history",
+      label: "Event History",
+      icon: "📜",
+    },
+  ];
 
   const pageTitle = useMemo(() => {
-    // map đơn giản theo URL
-    if (location.pathname.includes("/events/create")) return "Create Event";
-    if (location.pathname.includes("/events")) return "Events";
-    if (location.pathname.includes("/locations")) return "Locations";
-    if (location.pathname.includes("/participants")) return "Participants";
-    if (location.pathname.includes("/users")) return "Users";
-    if (location.pathname.includes("/reports")) return "Reports";
-    if (location.pathname.includes("/settings")) return "Settings";
+    if (location.pathname.includes("/approvals")) return "Pending Approvals";
+    if (location.pathname.includes("/ongoing")) return "Ongoing Events";
+    if (location.pathname.includes("/history")) return "Event History";
     return "Dashboard";
   }, [location.pathname]);
 
-  const onLogout = () => {
+  const handleLogout = () => {
     logout();
     navigate("/login");
   };
@@ -113,26 +61,20 @@ export default function ConsoleLayout() {
     <div className="console">
       {/* SIDEBAR */}
       <aside className="console-sidebar">
+        {/* Brand */}
         <button
           className="console-brand"
-          onClick={() =>
-            navigate(
-              roleName === "Admin"
-                ? "/admin/dashboard"
-                : roleName === "Staff"
-                ? "/staff/dashboard"
-                : "/manager/dashboard"
-            )
-          }
+          onClick={() => navigate("/director/dashboard")}
           type="button"
         >
           <div className="console-brand-logo">F</div>
           <div className="console-brand-text">
-            <div className="console-brand-name">FPTU Events</div>
-            <div className="console-brand-sub">{roleName} Console</div>
+            <div className="console-brand-name">FPTSphere</div>
+            <div className="console-brand-sub">Director Console</div>
           </div>
         </button>
 
+        {/* Navigation Section */}
         <div className="console-section-title">MAIN</div>
         <nav className="console-nav">
           {navItems.map((item) => (
@@ -149,6 +91,7 @@ export default function ConsoleLayout() {
           ))}
         </nav>
 
+        {/* Footer */}
         <div className="console-footer">
           <div className="console-user-card">
             <div className="console-avatar">{initials}</div>
@@ -158,41 +101,35 @@ export default function ConsoleLayout() {
             </div>
           </div>
 
-          <button className="console-logout" onClick={onLogout} type="button">
+          <button
+            className="console-logout"
+            onClick={handleLogout}
+            type="button"
+          >
             🚪 Logout
           </button>
 
-          <div className="console-copyright">© 2025 FPTU Events</div>
+          <div className="console-copyright">© 2025 FPTSphere</div>
         </div>
       </aside>
 
-      {/* MAIN */}
+      {/* MAIN CONTENT */}
       <div className="console-main">
         {/* TOPBAR */}
         <header className="console-topbar">
           <div className="console-topbar-left">
             <div className="console-title">{pageTitle}</div>
-            <div className="console-subtitle">
-              Workspace for Admin / Staff / Event Manager
-            </div>
+            <div className="console-subtitle">Director Workspace</div>
           </div>
 
           <div className="console-topbar-right">
+            {/* Search */}
             <div className="console-search">
               <span className="console-search-icon">⌕</span>
-              <input placeholder="Search…" />
+              <input placeholder="Search events..." />
             </div>
 
-            {(roleName === "Admin" || roleName === "Event Manager") && (
-              <button
-                className="console-btn console-btn-primary"
-                type="button"
-                onClick={() => navigate("/manager/events/create")}
-              >
-                + Tạo sự kiện
-              </button>
-            )}
-
+            {/* User Menu Button */}
             <button
               className="console-userbtn"
               type="button"
@@ -206,6 +143,7 @@ export default function ConsoleLayout() {
               <span className="console-caret">▾</span>
             </button>
 
+            {/* Dropdown Menu */}
             {openUserMenu && (
               <div
                 className="console-menu"
@@ -214,14 +152,14 @@ export default function ConsoleLayout() {
                 <button
                   className="console-menu-item"
                   type="button"
-                  onClick={() => navigate("/profile")}
+                  onClick={() => navigate("/")}
                 >
-                  👤 Profile
+                  🏠 Home
                 </button>
                 <button
                   className="console-menu-item"
                   type="button"
-                  onClick={onLogout}
+                  onClick={handleLogout}
                 >
                   🚪 Logout
                 </button>
@@ -230,6 +168,7 @@ export default function ConsoleLayout() {
           </div>
         </header>
 
+        {/* PAGE CONTENT */}
         <main className="console-content">
           <Outlet />
         </main>

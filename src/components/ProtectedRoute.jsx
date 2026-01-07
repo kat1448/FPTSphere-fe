@@ -28,6 +28,7 @@ const ProtectedRoute = ({ children, allowedRoles, requiredRole }) => {
     if (userRole === "Admin") return <Navigate to="/admin/dashboard" replace />;
     if (userRole === "Event Manager")
       return <Navigate to="/manager/dashboard" replace />;
+    if (userRole === "Director") return <Navigate to="/director/dashboard" replace />;
     if (userRole === "Staff") return <Navigate to="/staff/dashboard" replace />;
     return <Navigate to="/" replace />;
   }

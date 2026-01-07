@@ -69,6 +69,8 @@ export const API_ENDPOINTS = {
   REGISTER_EVENT_BY_STUDENT: (eventID) => `/events/${eventID}/register`,
   CANCEL_REGISTER_EVENT_BY_STUDENT: (eventID) => `/events/${eventID}/unregister`,
 
+  Create_EVENT: '/events',
+  Create_SubEvent: (parentID) => `/events/${parentID}/subevents`,
 
   // staff 
   EVENT_TASKS: '/EventTasks/my-tasks',
@@ -85,11 +87,11 @@ export const API_ENDPOINTS = {
   // Event Statuses
   EVENT_STATUSES: '/eventstatuses',
   EVENT_STATUS_BY_ID: (id) => `/eventstatuses/${id}`,
-
+  SUB_EVENTS_BY_PARENT_ID: (parentID) => `/events/${parentID}/subevents`,
   // Locations
   LOCATIONS: '/locations',
   LOCATION_BY_ID: (id) => `/locations/${id}`,
-
+  UPDATE_SUB_EVENT: (id) => `/events/subevents/${id}`,
   // Resources
   RESOURCES: '/resources',
   RESOURCE_BY_ID: (id) => `/resources/${id}`,
@@ -103,6 +105,11 @@ export const API_ENDPOINTS = {
   USER_BY_ID: (id) => `/users/${id}`,
 
   SUBEVENTS: (eventId) => `/Events/${eventId}/subevents`,
+  CREATE_EXTERNAL_SERVICE: '/ExternalServices',
+  UPDATE_EXTERNAL_SERVICE: (id) => `/ExternalServices/${id}`,
+  ASSIGN_EVENT_RESOURCES: '/events/assign-resources',
+  UPDATE_ASSIGN_EVENT_RESOURCES: '/events/update-assign-resources',
+
 };
 
 export default apiClient;
