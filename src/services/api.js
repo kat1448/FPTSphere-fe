@@ -101,6 +101,8 @@ export const API_ENDPOINTS = {
   // Users
   USERS: '/users',
   USER_BY_ID: (id) => `/users/${id}`,
+
+  SUBEVENTS: (eventId) => `/Events/${eventId}/subevents`,
 };
 
 export default apiClient;

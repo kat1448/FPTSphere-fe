@@ -1,0 +1,182 @@
+/* Step1MainEvent.css */
+
+/* Banner Upload */
+.banner-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.banner-container {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.banner-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.banner-progress {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.banner-remove {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(220, 38, 38, 0.9);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.banner-remove:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Location Card */
+.location-card {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.location-name {
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.location-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Modal */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.modal-close:hover {
+  color: #111827;
+}
+
+/* Rooms Grid */
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 14px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.room-card {
+  text-align: left;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.room-card.selected {
+  border-color: #111827;
+}
+
+.room-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  background: #f1f5f9;
+}
+
+.room-placeholder {
+  width: 100%;
+  height: 140px;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+}
+
+.room-info {
+  padding: 12px;
+}
+
+.room-name {
+  font-weight: 900;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+/* States */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+  font-weight: 900;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px;
+  background: #f8fafc;
+  border-radius: 14px;
+  color: #64748b;
+}
+
+/* Mode Buttons */
+.mode-active {
+  border-color: #111827 !important;
+  background: rgba(17, 24, 39, 0.08) !important;
+}
+
+/* Utilities */
+.mt-10 { margin-top: 10px; }
+.gap-10 { gap: 10px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .rooms-grid { grid-template-columns: 1fr; }
+  .banner-img { height: 150px; }
+  .location-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .location-actions { width: 100%; justify-content: flex-end; }
+}
