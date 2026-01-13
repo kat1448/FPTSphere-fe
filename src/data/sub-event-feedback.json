@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Nguyễn Văn An",
+    "role": "Sinh viên Kỹ thuật Phần mềm",
+    "comment": "Diễn giả chính rất xuất sắc, và các phiên networking rất có giá trị. Mong chờ sự kiện năm sau!"
+  },
+  {
+    "id": 2,
+    "name": "Trần Thị Bình",
+    "role": "Sinh viên Công nghệ Thông tin",
+    "comment": "Nội dung rất hay, nhưng wifi ở các phòng breakout hơi yếu. Ứng dụng rất hữu ích cho việc lên lịch."
+  },
+  {
+    "id": 3,
+    "name": "Lê Minh Cường",
+    "role": "Sinh viên Khoa học Máy tính",
+    "comment": "Sự kiện được tổ chức rất chuyên nghiệp. Các workshop thực hành rất bổ ích và giúp tôi học hỏi được nhiều điều mới."
+  },
+  {
+    "id": 4,
+    "name": "Phạm Thị Dung",
+    "role": "Sinh viên An toàn Thông tin",
+    "comment": "Thời gian biểu hợp lý, không gian tổ chức tốt. Tuy nhiên, nên có thêm thời gian nghỉ giữa các phiên."
+  },
+  {
+    "id": 5,
+    "name": "Hoàng Văn Em",
+    "role": "Sinh viên Hệ thống Thông tin",
+    "comment": "Rất ấn tượng với chất lượng của các bài thuyết trình. Mong muốn có thêm các chủ đề về AI và Machine Learning."
+  }
+]

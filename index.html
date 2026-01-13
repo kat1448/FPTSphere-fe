@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <!-- Google Maps JavaScript API with Places Library -->
+    <!-- TODO: Replace API key with your own from Google Cloud Console -->
+    <!-- Get API key from: https://console.cloud.google.com/google/maps-apis -->
+    <script>
+      // Load Google Maps API dynamically
+      (function() {
+        // Default API key (replace with your own in production)
+        // You can also set VITE_GOOGLE_MAPS_API_KEY in .env file
+        const apiKey = 'AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbUUSRIAFg';
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&loading=async&callback=initGoogleMaps`;
+        script.async = true;
+        script.defer = true;
+        script.onerror = function() {
+          console.error('Failed to load Google Maps API. Please check your API key.');
+          window.googleMapsLoadError = true;
+          window.dispatchEvent(new Event('googleMapsLoadError'));
+        };
+        document.head.appendChild(script);
+        
+        // Global callback for Google Maps initialization
+        window.initGoogleMaps = function() {
+          window.googleMapsLoaded = true;
+          // Dispatch event to notify React components
+          window.dispatchEvent(new Event('googleMapsLoaded'));
+        };
+      })();
+    </script>
+    <title>event-fe</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
