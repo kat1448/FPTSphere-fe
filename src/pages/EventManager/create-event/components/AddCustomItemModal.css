@@ -1,0 +1,8 @@
+/* AddCustomItemModal.css */
+.add-custom-item-modal .ant-modal-content {
+  border-radius: 12px;
+}
+
+.add-custom-item-modal .ant-form-item-label > label {
+  font-weight: 600;
+}

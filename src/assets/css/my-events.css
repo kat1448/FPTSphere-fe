@@ -1,0 +1,619 @@
+/* My Events Page Styles */
+.my-events-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Banner */
+.my-events-banner {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(to bottom right, #fffdf8, #fff7ef);
+    border-radius: 20px;
+    color: white;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.my-events-banner h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+    color: #ff6600;
+}
+
+.my-events-banner p {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    color: #333;
+}
+
+/* Statistics Cards */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 25px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.stat-icon {
+    font-size: 3rem;
+    line-height: 1;
+}
+
+.stat-content h3 {
+    font-size: 2rem;
+    margin: 0;
+    color: #2d3748;
+    font-weight: 700;
+}
+
+.stat-content p {
+    margin: 5px 0 0 0;
+    color: #718096;
+    font-size: 0.95rem;
+}
+
+.stat-card.total {
+    border-left: 4px solid #667eea;
+}
+
+.stat-card.upcoming {
+    border-left: 4px solid #4299e1;
+}
+
+.stat-card.checked-in {
+    border-left: 4px solid #48bb78;
+}
+
+.stat-card.completed {
+    border-left: 4px solid #9f7aea;
+}
+
+/* Controls */
+.my-events-controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.search-bar {
+    flex: 1;
+    min-width: 250px;
+    padding: 12px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-bar:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+}
+
+.filters select {
+    padding: 12px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filters select:hover {
+    border-color: #cbd5e0;
+}
+
+.filters select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Events Grid */
+.my-events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 25px;
+}
+
+.my-event-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.my-event-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.my-event-image-container {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+}
+
+.my-event-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.my-event-card:hover .my-event-image {
+    transform: scale(1.1);
+}
+
+.my-event-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.my-event-card:hover .my-event-overlay {
+    opacity: 1;
+}
+
+.view-btn {
+    padding: 12px 30px;
+    background: white;
+    color: #667eea;
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.view-btn:hover {
+    background: #667eea;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Status Badge */
+/* Event Status Badge - Inside Detail */
+.event-status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.event-status-badge.draft {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.event-status-badge.pending {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+.event-status-badge.approved {
+    background: #c6f6d5;
+    color: #22543d;
+}
+
+.event-status-badge.in-progress {
+    background: #bee3f8;
+    color: #2c5282;
+}
+
+.event-status-badge.event-completed {
+    background: #e9d8fd;
+    color: #553c9a;
+}
+
+.event-status-badge.cancelled {
+    background: #fed7d7;
+    color: #742a2a;
+}
+
+.event-status-badge.rejected {
+    background: #feb2b2;
+    color: #742a2a;
+}
+
+.event-status-badge.unknown {
+    background: #edf2f7;
+    color: #718096;
+}
+
+/* Event Content */
+.my-event-content {
+    padding: 20px;
+}
+
+.my-event-content h3 {
+    font-size: 1.4rem;
+    margin: 0 0 12px 0;
+    color: #2d3748;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.event-description {
+    color: #718096;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.event-details {
+    border-top: 2px solid #f7fafc;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f7fafc;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-size: 0.9rem;
+    color: #718096;
+    font-weight: 500;
+}
+
+.detail-value {
+    font-size: 0.9rem;
+    color: #2d3748;
+    font-weight: 600;
+    text-align: right;
+}
+
+/* Attendance Info */
+.attendance-info {
+    margin-top: 15px;
+    padding: 15px;
+    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+    border-radius: 10px;
+    border-left: 4px solid #48bb78;
+}
+
+.attendance-info h4 {
+    margin: 0 0 12px 0;
+    font-size: 1rem;
+    color: #2d3748;
+}
+
+.attendance-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 0.9rem;
+}
+
+.attendance-row span:first-child {
+    color: #718096;
+    font-weight: 500;
+}
+
+.attendance-row span:last-child {
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.method-badge {
+    background: #667eea;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    text-transform: capitalize;
+}
+
+/* Loading & Error States */
+.loading-container,
+.error-container,
+.empty-container {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.spinner {
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-container p,
+.error-container p,
+.empty-container p {
+    font-size: 1.1rem;
+    color: #718096;
+    margin: 10px 0;
+}
+
+.error-container h2,
+.empty-container h2 {
+    font-size: 2rem;
+    color: #2d3748;
+    margin-bottom: 15px;
+}
+
+.retry-btn,
+.browse-btn {
+    margin-top: 20px;
+    padding: 12px 30px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.retry-btn:hover,
+.browse-btn:hover {
+    background: #5568d3;
+    transform: scale(1.05);
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 1.2rem;
+    color: #718096;
+}
+
+/* QR Code Modal Styles */
+/* QR Code Modal - Compact Version */
+.qr-modal {
+    max-width: 400px !important;
+}
+
+.qr-modal-body {
+    padding: 20px !important;
+    text-align: center;
+}
+
+.qr-success-message {
+    margin-bottom: 20px;
+}
+
+.success-icon {
+    font-size: 3rem;
+    margin-bottom: 8px;
+    animation: scaleIn 0.5s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+.qr-success-message h4 {
+    font-size: 1rem;
+    color: #4a5568;
+    margin: 5px 0;
+    font-weight: 500;
+}
+
+.event-name-large {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 5px 0 0 0;
+}
+
+.qr-code-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    background: #f7fafc;
+    border-radius: 12px;
+    margin: 15px 0;
+}
+
+.qr-code-container canvas {
+    border-radius: 8px;
+}
+
+.qr-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-download-qr,
+.btn-done-qr {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-download-qr {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-download-qr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-done-qr {
+    background: #e2e8f0;
+    color: #2d3748;
+}
+
+.btn-done-qr:hover {
+    background: #cbd5e0;
+}
+
+.attendance-row .not-checked {
+    color: #a0aec0;
+    font-style: italic;
+    font-weight: 500;
+}
+
+.attendance-row span:last-child {
+    color: #2d3748;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .qr-modal {
+        max-width: 90% !important;
+        margin: 20px;
+    }
+
+    .qr-code-container canvas {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    .qr-actions {
+        flex-direction: column;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .qr-modal {
+        max-width: 95% !important;
+        margin: 20px;
+    }
+
+    .qr-code-container canvas {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    .qr-actions {
+        flex-direction: column;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .my-events-banner h1 {
+        font-size: 1.8rem;
+    }
+
+    .my-events-banner p {
+        font-size: 1rem;
+    }
+
+    .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .my-events-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .my-events-controls {
+        flex-direction: column;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
+
+    .filters {
+        width: 100%;
+    }
+
+    .filters select {
+        flex: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-container {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+        padding: 20px;
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+    }
+}

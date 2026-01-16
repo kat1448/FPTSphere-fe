@@ -1,0 +1,77 @@
+.testimonials {
+  padding: 6rem 1rem;
+  background: linear-gradient(135deg, #FFF7ED, #FFEDD5, #FFE5D4);
+  text-align: center;
+}
+
+.testimonials .inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.testimonials h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  color: #0f172a;
+  position: relative;
+}
+
+.testimonials .grid {
+  display: grid;
+  gap: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.testimonials .card {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 1.25rem;
+  padding: 2rem;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.testimonials .card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.testimonials .quote-mark {
+  font-size: 2.5rem;
+  color: #F2721E;
+  opacity: 0.6;
+  margin-bottom: 0.5rem;
+}
+
+.testimonials .quote {
+  font-style: italic;
+  color: #334155;
+  margin-bottom: 1.5rem;
+}
+
+.testimonials .person {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.testimonials .person img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid #F2721E;
+  box-shadow: 0 0 10px rgba(242, 114, 30, 0.4);
+}
+
+.testimonials .info .name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.testimonials .info .role {
+  font-size: 0.9rem;
+  color: #64748b;
+}

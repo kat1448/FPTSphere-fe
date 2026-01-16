@@ -1,0 +1,62 @@
+[
+  {
+    "studentId": "SE123456",
+    "email": "student1@fpt.edu.vn",
+    "fullName": "Nguyễn Văn An",
+    "status": "checked-in"
+  },
+  {
+    "studentId": "SE123457",
+    "email": "student2@fpt.edu.vn",
+    "fullName": "Trần Thị Bình",
+    "status": "checked-out"
+  },
+  {
+    "studentId": "SE123458",
+    "email": "student3@fpt.edu.vn",
+    "fullName": "Lê Minh Cường",
+    "status": "invited"
+  },
+  {
+    "studentId": "SE123459",
+    "email": "student4@fpt.edu.vn",
+    "fullName": "Phạm Thị Dung",
+    "status": "checked-in"
+  },
+  {
+    "studentId": "SE123460",
+    "email": "student5@fpt.edu.vn",
+    "fullName": "Hoàng Văn Em",
+    "status": "invited"
+  },
+  {
+    "studentId": "SE123461",
+    "email": "student6@fpt.edu.vn",
+    "fullName": "Vũ Thị Phương",
+    "status": "checked-in"
+  },
+  {
+    "studentId": "SE123462",
+    "email": "student7@fpt.edu.vn",
+    "fullName": "Đỗ Văn Giang",
+    "status": "checked-out"
+  },
+  {
+    "studentId": "SE123463",
+    "email": "student8@fpt.edu.vn",
+    "fullName": "Bùi Thị Hoa",
+    "status": "invited"
+  },
+  {
+    "studentId": "SE123464",
+    "email": "student9@fpt.edu.vn",
+    "fullName": "Ngô Văn Khoa",
+    "status": "checked-in"
+  },
+  {
+    "studentId": "SE123465",
+    "email": "student10@fpt.edu.vn",
+    "fullName": "Lý Thị Lan",
+    "status": "checked-in"
+  }
+]
