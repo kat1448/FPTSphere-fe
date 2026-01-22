@@ -1060,7 +1060,7 @@ export default function CreateSubEventModal({ open, onCancel, parentEventId, mai
               loading={loading}
               style={{ background: "#F2721E", borderColor: "#F2721E" }}
             >
-              Xác nhận
+              Confirm
             </Button>
           )}
         </Space>

@@ -61,9 +61,9 @@ const toGMT7 = (dayjsObj) => {
 // ========================================
 // REGION: API IMPORTS
 // ========================================
-// Import API client để call external location API
+// Import API client to call external location API
 import apiClient from "../../../../services/api.js";
-// Import Events API service để create event
+// Import Events API service to create event
 import { createEvent as createEventAPI, getLocationBookings } from "../../../../services/events.api.js";
 // Import Locations API service
 import { getLocations, searchLocations, createLocation } from "../../../../services/locations.api.js";
@@ -513,7 +513,7 @@ export default function Step1MainEvent({ onNext }) {
 
       // Validate start/end time
       if (!values.startTime || !values.endTime) {
-        return setErr("Vui lòng chọn Start/End time");
+        return setErr("Please select Start/End time");
       }
 
       // Convert to GMT+7 for validation
@@ -533,10 +533,10 @@ export default function Step1MainEvent({ onNext }) {
 
       // Validate location
       if (locationMode === "internal" && !selectedLocation) {
-        return setErr("Vui lòng chọn phòng");
+        return setErr("Please select a room");
       }
       if (locationMode === "external" && externalLocationType === "manual" && !externalLocationName.trim()) {
-        return setErr("Vui lòng nhập tên địa điểm");
+        return setErr("Please enter location name");
       }
 
       setSaving(true);
@@ -561,7 +561,7 @@ export default function Step1MainEvent({ onNext }) {
           });
           externalLocationId = extRes.data?.data?.externalLocationId ?? extRes.data?.data?.id ?? null;
           if (!extRes.data?.success || !externalLocationId) {
-            throw new Error("Không tạo được external location");
+            throw new Error("Failed to create external location");
           }
         }
       }
@@ -594,7 +594,7 @@ export default function Step1MainEvent({ onNext }) {
             throw new Error('Banner URL must be a valid URL');
           }
         } catch (uploadErr) {
-          setErr(`Upload banner thất bại: ${uploadErr.message}`);
+          setErr(`Failed to upload banner: ${uploadErr.message}`);
           setSaving(false);
           return;
         }
@@ -738,7 +738,7 @@ export default function Step1MainEvent({ onNext }) {
       // ========================================
       console.error("❌ Error creating main event:", e);
       
-      let errorMessage = "Tạo sự kiện thất bại";
+      let errorMessage = "Failed to create event";
       
       // Handle API validation errors (400 status)
       if (e.status === 400 && e.errors) {
@@ -1584,7 +1584,7 @@ export default function Step1MainEvent({ onNext }) {
             rules={[{ required: true, message: "Please enter location name" }]}
           >
             <Input
-              placeholder="e.g., ĐH FPT Hà Nội Beta"
+              placeholder="e.g., FPT University Hanoi Beta"
               size="large"
               style={{ fontSize: "14px" }}
             />

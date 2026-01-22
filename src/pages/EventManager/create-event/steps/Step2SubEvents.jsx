@@ -143,7 +143,7 @@ export default function Step2SubEvents({ onPrev, onNext }) {
   useEffect(() => {
     const me = WizardSS.get("mainEvent", null);
     if (!me) {
-      message.error("Không tìm thấy Main Event. Vui lòng quay lại Step 1.");
+      message.error("Main Event not found. Please go back to Step 1.");
       onPrev();
       return;
     }
@@ -391,7 +391,7 @@ export default function Step2SubEvents({ onPrev, onNext }) {
             });
             externalLocationId = extRes.data?.data?.externalLocationId ?? extRes.data?.data?.id ?? null;
             if (!extRes.data?.success || !externalLocationId) {
-              throw new Error("Không tạo được external location");
+              throw new Error("Failed to create external location");
             }
             externalLocationId = Number(externalLocationId);
           } catch (extErr) {

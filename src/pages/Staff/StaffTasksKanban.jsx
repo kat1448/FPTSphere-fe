@@ -92,10 +92,13 @@ export default function StaffTasksKanban() {
       const tasksData = await getMyTasks();
       const tasksList = Array.isArray(tasksData) ? tasksData : [];
       
-      // Load event info for tasks
+      // Filter tasks: Only show tasks from approved events (statusId = 3)
+      // Load event info for tasks and filter by approval status
       const eventIds = [...new Set(tasksList.map(t => t.eventId).filter(Boolean))];
       const map = {};
+      const approvedTasks = [];
       
+      // Load event info
       await Promise.all(
         eventIds.map(async (eventId) => {
           try {
@@ -107,8 +110,34 @@ export default function StaffTasksKanban() {
         })
       );
       
+      // Filter tasks: only include tasks from approved events
+      for (const task of tasksList) {
+        if (!task.eventId) {
+          continue;
+        }
+        
+        const event = map[task.eventId];
+        if (!event) {
+          // Skip if event not found
+          continue;
+        }
+        
+        // Check if event is approved (statusId = 3 or statusName = "Approved")
+        const isApproved = event.statusId === 3 || 
+                         event.status?.statusName === "Approved" || 
+                         event.statusName === "Approved";
+        
+        if (isApproved) {
+          approvedTasks.push({
+            ...task,
+            event: event
+          });
+        }
+      }
+      
+      console.log(`✅ Filtered ${approvedTasks.length} approved tasks out of ${tasksList.length} total tasks`);
       setEventMap(map);
-      setTasks(tasksList);
+      setTasks(approvedTasks);
     } catch (error) {
       console.error("Error loading tasks:", error);
       message.error(error.message || "Failed to load tasks");

@@ -108,10 +108,10 @@ const SubEventFeedback = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {subEvent.eventName || subEvent.name} - Phản hồi
+                {subEvent.eventName || subEvent.name} - Feedback
               </h1>
               <p className="text-[14px] text-gray-600">
-                Xem phản hồi từ người tham dự
+                View feedback from participants
               </p>
             </div>
           </div>
@@ -121,11 +121,11 @@ const SubEventFeedback = () => {
         <Card className="mb-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-[12px] text-gray-600 mb-1">Tổng số phản hồi</div>
+              <div className="text-[12px] text-gray-600 mb-1">Total Feedback</div>
               <div className="text-3xl font-bold text-gray-900">{totalFeedbacks}</div>
             </div>
             <div className="text-right">
-              <div className="text-[12px] text-gray-600 mb-1">Sự kiện</div>
+              <div className="text-[12px] text-gray-600 mb-1">Event</div>
               <div className="text-lg font-semibold text-gray-900">
                 {subEvent.eventName || subEvent.name}
               </div>
@@ -137,7 +137,7 @@ const SubEventFeedback = () => {
         {feedbacks.length === 0 ? (
           <Card className="shadow-sm">
             <Empty
-              description="Chưa có phản hồi nào"
+              description="No feedback yet"
               image={Empty.PRESENTED_IMAGE_SIMPLE}
             />
           </Card>
@@ -149,7 +149,7 @@ const SubEventFeedback = () => {
                   <div className="mb-3">
                     <div className="flex items-center gap-3 mb-2">
                       <div className="text-[14px] font-semibold text-gray-900">
-                        {feedback.name || "Người dùng ẩn danh"}
+                        {feedback.name || "Anonymous user"}
                       </div>
                       {feedback.role && (
                         <span className="text-[12px] text-gray-500">
@@ -177,7 +177,7 @@ const SubEventFeedback = () => {
                   onChange={(page) => setCurrentPage(page)}
                   showSizeChanger={false}
                   showTotal={(total, range) =>
-                    `Hiển thị ${range[0]}-${range[1]} trong tổng số ${total} phản hồi`
+                    `Showing ${range[0]}-${range[1]} of ${total} feedback`
                   }
                 />
               </div>

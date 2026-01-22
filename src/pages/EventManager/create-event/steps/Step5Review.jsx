@@ -83,7 +83,7 @@ export default function Step5Review({ onPrev }) {
       content: "Are you sure you want to submit this event? You can still edit it later.",
       okText: "Yes, Submit",
       cancelText: "Cancel",
-      centered: true, // Popup ở chính giữa màn hình
+      centered: true, // Popup centered on screen
       okButtonProps: {
         style: { background: "#F2721E", borderColor: "#F2721E" },
       },

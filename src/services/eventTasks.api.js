@@ -8,8 +8,8 @@ import apiClient from "./api.js";
 // ========================================
 /**
  * EventTasks API Endpoints
- * Base URL được config trong api.js từ environment variable VITE_API_BASE_URL
- * Mặc định: https://localhost:7273/api
+ * Base URL is configured in api.js from environment variable VITE_API_BASE_URL
+ * Default: https://localhost:7273/api
  */
 const EVENT_TASKS_ENDPOINT = "/EventTasks";
 
@@ -26,7 +26,7 @@ const EVENT_TASKS_ENDPOINT = "/EventTasks";
  *   "eventId": 3,
  *   "assignedTo": 4,
  *   "title": "Prepare event materials",
- *   "description": "Chuẩn bị tài liệu cho sự kiện",
+ *   "description": "Prepare event materials",
  *   "status": "Todo",
  *   "startDate": "2026-01-11T09:00:00",
  *   "dueDate": "2026-01-11T17:00:00",
@@ -237,7 +237,7 @@ export const getTasksByEventId = async (eventId) => {
  * Response format:
  * {
  *   "success": true,
- *   "message": "Danh sách task được giao",
+ *   "message": "List of assigned tasks",
  *   "data": [],
  *   "errors": null,
  *   "timestamp": "..."

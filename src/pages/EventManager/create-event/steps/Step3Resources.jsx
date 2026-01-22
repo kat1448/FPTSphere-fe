@@ -215,7 +215,7 @@ export default function Step3Resources({ onPrev, onNext }) {
   useEffect(() => {
     const me = WizardSS.get("mainEvent", null);
     if (!me) {
-      message.error("Không tìm thấy Main Event. Vui lòng quay lại Step 1.");
+      message.error("Main Event not found. Please go back to Step 1.");
       return;
     }
     setMainEvent(me);

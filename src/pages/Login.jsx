@@ -96,7 +96,7 @@ const Login = () => {
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center p-4">
         <Card className="text-center shadow-lg" style={{ borderRadius: "16px", maxWidth: "400px", width: "100%" }}>
           <Spin size="large" style={{ color: "#F2721E" }} />
-          <p className="mt-4 text-gray-600">Đang kiểm tra đăng nhập...</p>
+          <p className="mt-4 text-gray-600">Checking login...</p>
         </Card>
       </div>
     );

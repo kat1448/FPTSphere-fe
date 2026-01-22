@@ -17,13 +17,14 @@ import {
   Select,
   DatePicker,
   message,
+  Popconfirm,
 } from "antd";
-import { ArrowLeftOutlined, ReloadOutlined, PlusCircleOutlined, EyeOutlined, UserAddOutlined, DeleteOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, ReloadOutlined, PlusCircleOutlined, EyeOutlined, UserAddOutlined, DeleteOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { getEventById, getSubEvents } from "../../services/events.api";
-import { getTasksByEventId, getUsersByRoleForTasks, createEventTask, getMyAssignedTasks } from "../../services/eventTasks.api";
+import { getTasksByEventId, getUsersByRoleForTasks, createEventTask, getMyAssignedTasks, deleteEventTask } from "../../services/eventTasks.api";
 import authService from "../../services/authService";
 import CreateSubEventModal from "./components/CreateSubEventModal";
 
@@ -186,7 +187,22 @@ export default function EventManagerEventView() {
     }
   };
 
-  const handleOpenAssignTask = async () => {
+  const handleOpenAssignTask = async (subEventId = null) => {
+    // If subEventId is provided, set it as selectedSubEventId
+    if (subEventId) {
+      setSelectedSubEventId(subEventId);
+      // Load sub-event detail if not already loaded
+      if (!subEventDetail || subEventDetail.eventId !== subEventId) {
+        try {
+          const detail = await getEventById(Number(subEventId));
+          setSubEventDetail(detail);
+        } catch (err) {
+          console.error("Error loading sub-event detail:", err);
+          message.error("Failed to load sub-event detail");
+        }
+      }
+    }
+    
     setAssignTaskModalOpen(true);
     setDraftTasks([]); // Reset draft tasks
     taskForm.resetFields();
@@ -300,6 +316,49 @@ export default function EventManagerEventView() {
     message.success("Task removed from list");
   };
 
+  // Handle approve task (delete completed task)
+  const handleApproveTask = async (taskId) => {
+    try {
+      setLoadingTasks(true);
+      await deleteEventTask(taskId);
+      message.success("Task approved and removed successfully");
+      
+      // Reload tasks
+      const allAssignedTasks = await getMyAssignedTasks();
+      const mainEventId = Number(eventId);
+      const filteredTasks = allAssignedTasks.filter(task => {
+        const taskEventId = task.eventId;
+        if (taskEventId === mainEventId) return true;
+        return subEvents.some(sub => sub.eventId === taskEventId);
+      });
+      setTasks(filteredTasks);
+    } catch (error) {
+      console.error("Error approving task:", error);
+      message.error(error.message || "Failed to approve task");
+    } finally {
+      setLoadingTasks(false);
+    }
+  };
+
+  // Handle approve task in sub-event modal
+  const handleApproveSubEventTask = async (taskId) => {
+    try {
+      setLoadingSubEventTasks(true);
+      await deleteEventTask(taskId);
+      message.success("Task approved and removed successfully");
+      
+      // Reload tasks for sub-event
+      const allAssignedTasks = await getMyAssignedTasks();
+      const filteredTasks = allAssignedTasks.filter(task => task.eventId === Number(selectedSubEventId));
+      setSubEventTasks(filteredTasks);
+    } catch (error) {
+      console.error("Error approving task:", error);
+      message.error(error.message || "Failed to approve task");
+    } finally {
+      setLoadingSubEventTasks(false);
+    }
+  };
+
   const subCols = [
     {
       title: "Sub-Event",
@@ -334,19 +393,40 @@ export default function EventManagerEventView() {
     {
       title: "Actions",
       key: "actions",
-      width: 100,
-      render: (_, record) => (
-        <Button
-          size="small"
-          icon={<EyeOutlined />}
-          onClick={(e) => {
-            e.stopPropagation();
-            openSubEventDetail(record.eventId);
-          }}
-        >
-          View
-        </Button>
-      ),
+      width: 200,
+      render: (_, record) => {
+        const statusName = record.status?.statusName || record.statusName || "";
+        const isApproved = statusName === "Approved";
+        
+        return (
+          <Space>
+            <Button
+              size="small"
+              icon={<EyeOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                openSubEventDetail(record.eventId);
+              }}
+            >
+              View
+            </Button>
+            {isApproved && (
+              <Button
+                type="primary"
+                size="small"
+                icon={<UserAddOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpenAssignTask(record.eventId);
+                }}
+                style={{ background: "#F2721E", borderColor: "#F2721E" }}
+              >
+                Assign Task
+              </Button>
+            )}
+          </Space>
+        );
+      },
     },
   ];
 
@@ -416,6 +496,35 @@ export default function EventManagerEventView() {
       key: "dueDate",
       width: 180,
       render: (d) => (d ? dayjs(d).format("YYYY-MM-DD HH:mm") : "N/A"),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      width: 120,
+      render: (_, record) => {
+        if (record.status === "Completed") {
+          return (
+            <Popconfirm
+              title="Approve Task"
+              description="Are you sure you want to approve and remove this completed task?"
+              onConfirm={() => handleApproveTask(record.taskId)}
+              okText="Approve"
+              cancelText="Cancel"
+              okButtonProps={{ type: "primary", danger: false }}
+            >
+              <Button
+                type="primary"
+                size="small"
+                icon={<CheckCircleOutlined />}
+                style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
+              >
+                Approve
+              </Button>
+            </Popconfirm>
+          );
+        }
+        return null;
+      },
     },
   ];
 
@@ -507,9 +616,36 @@ export default function EventManagerEventView() {
         </Descriptions>
 
         <div style={{ marginTop: 24 }}>
-          <Title level={4} style={{ marginBottom: 8 }}>
-            Assigned Tasks
-          </Title>
+          <div style={{ marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Title level={4} style={{ margin: 0 }}>
+              Assigned Tasks
+            </Title>
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={async () => {
+                try {
+                  setLoadingTasks(true);
+                  const allAssignedTasks = await getMyAssignedTasks();
+                  const mainEventId = Number(eventId);
+                  const filteredTasks = allAssignedTasks.filter(task => {
+                    const taskEventId = task.eventId;
+                    if (taskEventId === mainEventId) return true;
+                    return subEvents.some(sub => sub.eventId === taskEventId);
+                  });
+                  setTasks(filteredTasks);
+                  message.success("Tasks refreshed successfully");
+                } catch (err) {
+                  console.error("Error refreshing tasks:", err);
+                  message.error("Failed to refresh tasks");
+                } finally {
+                  setLoadingTasks(false);
+                }
+              }}
+              loading={loadingTasks}
+            >
+              Refresh
+            </Button>
+          </div>
           {loadingTasks ? (
             <div style={{ padding: 16, textAlign: "center" }}>
               <Spin />
@@ -742,6 +878,35 @@ export default function EventManagerEventView() {
                           {text || "N/A"}
                         </Text>
                       ),
+                    },
+                    {
+                      title: "Actions",
+                      key: "actions",
+                      width: 120,
+                      render: (_, record) => {
+                        if (record.status === "Completed") {
+                          return (
+                            <Popconfirm
+                              title="Approve Task"
+                              description="Are you sure you want to approve and remove this completed task?"
+                              onConfirm={() => handleApproveSubEventTask(record.taskId)}
+                              okText="Approve"
+                              cancelText="Cancel"
+                              okButtonProps={{ type: "primary", danger: false }}
+                            >
+                              <Button
+                                type="primary"
+                                size="small"
+                                icon={<CheckCircleOutlined />}
+                                style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
+                              >
+                                Approve
+                              </Button>
+                            </Popconfirm>
+                          );
+                        }
+                        return null;
+                      },
                     },
                   ]}
                 />

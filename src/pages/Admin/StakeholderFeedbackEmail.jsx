@@ -139,9 +139,9 @@ const StakeholderFeedbackEmail = () => {
         const eventCreator = subEventData.creator?.fullName || user?.name || "Event Organizer";
         const eventCreatorEmail = subEventData.creator?.email || user?.email || "";
         
-        const initialContent = `Kính gửi Stakeholder,<br><br>Chúng tôi hy vọng thông điệp này đến với bạn trong tình trạng tốt. Chúng tôi đang liên hệ để yêu cầu phản hồi quý giá của bạn về sự kiện sau:<br><br><strong>Sự kiện:</strong> ${subEventData.eventName || "Sự kiện"}<br><strong>Ngày:</strong> ${dayjs(subEventData.startTime).format("DD/MM/YYYY")}<br><strong>Thời gian:</strong> ${dayjs(subEventData.startTime).format("HH:mm")} - ${dayjs(subEventData.endTime).format("HH:mm")}<br><strong>Địa điểm:</strong> ${locationName}<br><br>Phản hồi của bạn rất quan trọng để giúp chúng tôi cải thiện các sự kiện trong tương lai. Vui lòng dành vài phút để chia sẻ suy nghĩ và đề xuất của bạn.<br><br>Cảm ơn bạn đã dành thời gian và tham gia.<br><br>Trân trọng,<br>${eventCreator}`;
+        const initialContent = `Dear Stakeholder,<br><br>We hope this message finds you well. We are reaching out to request your valuable feedback on the following event:<br><br><strong>Event:</strong> ${subEventData.eventName || "Event"}<br><strong>Date:</strong> ${dayjs(subEventData.startTime).format("DD/MM/YYYY")}<br><strong>Time:</strong> ${dayjs(subEventData.startTime).format("HH:mm")} - ${dayjs(subEventData.endTime).format("HH:mm")}<br><strong>Location:</strong> ${locationName}<br><br>Your feedback is very important to help us improve future events. Please take a few minutes to share your thoughts and suggestions.<br><br>Thank you for your time and participation.<br><br>Best regards,<br>${eventCreator}`;
         
-        setSubject(`Yêu cầu phản hồi: ${subEventData.eventName || "Sự kiện"}`);
+        setSubject(`Feedback Request: ${subEventData.eventName || "Event"}`);
         setEmailBody(initialContent);
         
         // Update editor content
@@ -157,7 +157,7 @@ const StakeholderFeedbackEmail = () => {
         setFeedbackFormLink(`https://forms.google.com/feedback/${eventId}/${subEventId}`);
       } catch (error) {
         console.error("❌ Error loading event:", error);
-        message.error("Không thể tải dữ liệu sự kiện");
+        message.error("Failed to load event data");
       }
     };
 
@@ -425,7 +425,7 @@ const StakeholderFeedbackEmail = () => {
           </Button>
           <h1 className="text-2xl font-bold text-gray-900">Gửi yêu cầu phản hồi đến Stakeholders</h1>
           <p className="text-[13px] text-gray-500 mt-1">
-            Yêu cầu phản hồi từ stakeholders cho: <strong>{subEvent.eventName || subEvent.name}</strong>
+            Request feedback from stakeholders for: <strong>{subEvent.eventName || subEvent.name}</strong>
           </p>
         </div>
 

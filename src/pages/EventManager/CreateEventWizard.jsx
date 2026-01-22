@@ -135,7 +135,7 @@ const CreateEventWizard = () => {
     if (extr?.length) setExternalResources(extr);
     if (tks?.length) setTasks(tks);
 
-    // Nếu có mainEvent draft trước đó, fill ngược về form step 1 (optional)
+    // If there is a previous mainEvent draft, fill back to form step 1 (optional)
     if (main && step === 1) {
       setMainEvent((prev) => ({
         ...prev,
@@ -159,7 +159,7 @@ const CreateEventWizard = () => {
     setRoomsError(null);
 
     if (!mainEvent.startTime || !mainEvent.endTime) {
-      setRoomsError("Vui lòng chọn thời gian bắt đầu / kết thúc sự kiện trước khi lọc phòng.");
+      setRoomsError("Please select event start/end time before filtering rooms.");
       return;
     }
 
@@ -173,10 +173,10 @@ const CreateEventWizard = () => {
       const res = await apiClient.get("/locations/available", { params });
 
       if (res.data?.success) setAvailableRooms(res.data.data || []);
-      else setRoomsError(res.data?.message || "Không tải được danh sách phòng khả dụng.");
+      else setRoomsError(res.data?.message || "Failed to load available rooms list.");
     } catch (err) {
-      console.error("❌ Lỗi load phòng khả dụng:", err);
-      setRoomsError(err.response?.data?.message || "Không tải được danh sách phòng khả dụng.");
+      console.error("❌ Error loading available rooms:", err);
+      setRoomsError(err.response?.data?.message || "Failed to load available rooms list.");
     } finally {
       setLoadingRooms(false);
     }
@@ -194,18 +194,18 @@ const CreateEventWizard = () => {
     // ===== STEP 1: create main event + location, then persist to sessionStorage
     if (step === 1) {
       if (!mainEvent.eventName || !mainEvent.startTime || !mainEvent.endTime) {
-        setError("Vui lòng nhập tên sự kiện và thời gian bắt đầu/kết thúc.");
+        setError("Please enter event name and start/end time.");
         return;
       }
 
       if (locationMode === "internal") {
         if (!locationId) {
-          setError("Vui lòng chọn một phòng nội bộ cho sự kiện hoặc chuyển sang địa điểm bên ngoài.");
+          setError("Please select an internal room for the event or switch to external location.");
           return;
         }
       } else {
         if (!externalLocationName) {
-          setError("Vui lòng nhập tên địa điểm bên ngoài.");
+          setError("Please enter external location name.");
           return;
         }
       }
@@ -213,7 +213,7 @@ const CreateEventWizard = () => {
       try {
         setSaving(true);
 
-        // payload backend (giữ theo code bạn đang làm)
+        // payload backend (keep as per your current code)
         const payload = {
           eventName: mainEvent.eventName,
           description: mainEvent.description,
@@ -245,7 +245,7 @@ const CreateEventWizard = () => {
         setStep(2);
       } catch (e) {
         console.error(e);
-        setError(e?.response?.data?.message || e.message || "Tạo sự kiện thất bại.");
+        setError(e?.response?.data?.message || e.message || "Failed to create event.");
       } finally {
         setSaving(false);
       }
@@ -255,7 +255,7 @@ const CreateEventWizard = () => {
     // ===== STEP 2: require >=1 sub event then persist
     if (step === 2) {
       if (!subEvents.length) {
-        setError("Bạn cần tạo ít nhất 1 Sub-Event trước khi sang bước Resources.");
+        setError("You need to create at least 1 Sub-Event before proceeding to Resources step.");
         return;
       }
       SS.set("subEvents", subEvents);
@@ -282,7 +282,7 @@ const CreateEventWizard = () => {
 
     // ===== STEP 5: submit (your backend)
     if (step === 5) {
-      // bạn có thể gọi API submit all ở đây
+      // you can call API submit all here
       // await eventService.submitDirectorPack(eventId)
       navigate("/manager/dashboard");
     }
@@ -313,12 +313,12 @@ const CreateEventWizard = () => {
     const startISO = seDraft.start ? new Date(seDraft.start).toISOString() : null;
     const endISO = seDraft.end ? new Date(seDraft.end).toISOString() : null;
 
-    if (!name) return setError("Vui lòng nhập tên Sub-Event.");
-    if (!startISO || !endISO) return setError("Vui lòng chọn Start/End cho Sub-Event.");
-    if (new Date(endISO) <= new Date(startISO)) return setError("End phải sau Start.");
+    if (!name) return setError("Please enter Sub-Event name.");
+    if (!startISO || !endISO) return setError("Please select Start/End for Sub-Event.");
+    if (new Date(endISO) <= new Date(startISO)) return setError("End time must be after Start time.");
 
     if (main && !withinMain(main, startISO, endISO)) {
-      return setError("Thời gian Sub-Event phải nằm trong khung thời gian Main Event.");
+      return setError("Sub-Event time must be within Main Event time range.");
     }
 
     const obj = {
@@ -328,7 +328,7 @@ const CreateEventWizard = () => {
       end: endISO,
       cost: Number(seDraft.cost || 0),
       desc: seDraft.desc?.trim() || "",
-      // location sẽ gán ở Step 3
+      // location will be assigned in Step 3
     };
 
     setError(null);
@@ -350,8 +350,8 @@ const CreateEventWizard = () => {
   const activeSub = useMemo(() => subEvents.find((x) => x.id === activeSeId), [subEvents, activeSeId]);
 
   const addInternalRoomForActive = () => {
-    if (!activeSub) return setError("Hãy chọn Sub-Event trước.");
-    const name = prompt("Nhập tên phòng (demo) - VD: Auditorium 200");
+    if (!activeSub) return setError("Please select a Sub-Event first.");
+    const name = prompt("Enter room name (demo) - e.g.: Auditorium 200");
     if (!name) return;
     setError(null);
     setInternalResources((prev) => [
@@ -369,10 +369,10 @@ const CreateEventWizard = () => {
   };
 
   const addInternalDeviceForActive = () => {
-    if (!activeSub) return setError("Hãy chọn Sub-Event trước.");
-    const name = prompt("Nhập tên thiết bị (demo) - VD: Projector");
+    if (!activeSub) return setError("Please select a Sub-Event first.");
+    const name = prompt("Enter device name (demo) - e.g.: Projector");
     if (!name) return;
-    const qty = Number(prompt("Số lượng? (demo)", "1") || 1);
+    const qty = Number(prompt("Quantity? (demo)", "1") || 1);
     setError(null);
     setInternalResources((prev) => [
       ...prev,
@@ -389,10 +389,10 @@ const CreateEventWizard = () => {
   };
 
   const addExternalForActive = () => {
-    if (!activeSub) return setError("Hãy chọn Sub-Event trước.");
-    const provider = prompt("Nhập nhà cung cấp (demo) - VD: AV Pro Co.");
+    if (!activeSub) return setError("Please select a Sub-Event first.");
+    const provider = prompt("Enter provider (demo) - e.g.: AV Pro Co.");
     if (!provider) return;
-    const expected = Number(prompt("Chi phí dự kiến?", "0") || 0);
+    const expected = Number(prompt("Expected cost?", "0") || 0);
     setError(null);
     setExternalResources((prev) => [
       ...prev,
@@ -406,9 +406,9 @@ const CreateEventWizard = () => {
     const subEventId = taskDraft.subEventId;
     const dueISO = taskDraft.due ? new Date(taskDraft.due).toISOString() : null;
 
-    if (!title) return setError("Vui lòng nhập tiêu đề task.");
-    if (!subEventId) return setError("Vui lòng chọn Sub-Event cho task.");
-    if (!dueISO) return setError("Vui lòng chọn deadline.");
+    if (!title) return setError("Please enter task title.");
+    if (!subEventId) return setError("Please select Sub-Event for task.");
+    if (!dueISO) return setError("Please select deadline.");
 
     const obj = {
       title,
@@ -464,7 +464,7 @@ const CreateEventWizard = () => {
               type="button"
               className={`md-pill ${step === s.n ? "active" : ""}`}
               onClick={() => {
-                // chỉ cho nhảy nếu đã có mainEvent ở SS
+                // only allow navigation if mainEvent exists in SS
                 if (s.n > 1 && !SS.get("mainEvent", null)) return;
                 setError(null);
                 setStep(s.n);
@@ -484,7 +484,7 @@ const CreateEventWizard = () => {
 
       <div className="md-form-grid">
         <div className="md-field md-field-full">
-          <label>Tên sự kiện *</label>
+          <label>Event Name *</label>
           <input
             value={mainEvent.eventName}
             onChange={(e) => setMainEvent((p) => ({ ...p, eventName: e.target.value }))}
@@ -493,7 +493,7 @@ const CreateEventWizard = () => {
         </div>
 
         <div className="md-field md-field-full">
-          <label>Mô tả</label>
+          <label>Description</label>
           <textarea
             rows={3}
             value={mainEvent.description}
@@ -580,16 +580,16 @@ const CreateEventWizard = () => {
 
           <div style={{ marginTop: 10, display: "flex", gap: 10, flexWrap: "wrap" }}>
             <button type="button" className="md-btn-primary" onClick={fetchAvailableRooms}>
-              Lọc phòng khả dụng
+              Filter Available Rooms
             </button>
             {roomsError && <span style={{ color: "crimson" }}>{roomsError}</span>}
           </div>
 
           <div className="md-room-grid" style={{ marginTop: 12 }}>
             {loadingRooms ? (
-              <p>Đang tải danh sách phòng...</p>
+              <p>Loading room list...</p>
             ) : availableRooms.length === 0 ? (
-              <p className="md-text-muted">Chưa có dữ liệu phòng.</p>
+              <p className="md-text-muted">No room data available.</p>
             ) : (
               availableRooms.map((room) => {
                 const selected = locationId === room.locationId;
@@ -605,9 +605,9 @@ const CreateEventWizard = () => {
                         {room.building} • {room.roomNumber}
                       </p>
                       <p className="md-text-muted">
-                        Sức chứa: <strong>{room.capacity ?? "Không rõ"}</strong>
+                        Capacity: <strong>{room.capacity ?? "Unknown"}</strong>
                       </p>
-                      {selected && <div className="md-room-badge-selected">Đã chọn</div>}
+                      {selected && <div className="md-room-badge-selected">Selected</div>}
                     </div>
                   </div>
                 );
@@ -618,11 +618,11 @@ const CreateEventWizard = () => {
       ) : (
         <div className="md-form-grid">
           <div className="md-field md-field-full">
-            <label>Tên địa điểm bên ngoài *</label>
+            <label>External Location Name *</label>
             <input value={externalLocationName} onChange={(e) => setExternalLocationName(e.target.value)} />
           </div>
           <div className="md-field md-field-full">
-            <label>Địa chỉ chi tiết</label>
+            <label>Detailed Address</label>
             <textarea rows={3} value={externalLocationAddress} onChange={(e) => setExternalLocationAddress(e.target.value)} />
           </div>
         </div>
@@ -638,7 +638,7 @@ const CreateEventWizard = () => {
           <div>
             <h2>2. Sub-Events</h2>
             <p className="md-text-muted">
-              Parent: <strong>{main?.name || "—"}</strong> (chỉ khai báo Sub-Event, resources gán ở bước 3)
+              Parent: <strong>{main?.name || "—"}</strong> (only declare Sub-Event, resources will be assigned in step 3)
             </p>
           </div>
           <button type="button" className="md-btn-primary" onClick={openAddSubEvent}>
@@ -661,7 +661,7 @@ const CreateEventWizard = () => {
               {subEvents.length === 0 ? (
                 <tr>
                   <td colSpan={5} style={{ padding: 16, textAlign: "center" }}>
-                    Chưa có Sub-Event
+                    No Sub-Event
                   </td>
                 </tr>
               ) : (
@@ -753,14 +753,14 @@ const CreateEventWizard = () => {
 
   const renderStep3 = () => (
     <div className="md-card">
-      <h2>3. Resources (gán theo Sub-Event)</h2>
+      <h2>3. Resources (assigned by Sub-Event)</h2>
 
       <div className="md-form-grid">
         <div className="md-field md-field-full">
-          <label>Chọn Sub-Event</label>
+          <label>Select Sub-Event</label>
           <select value={activeSeId || ""} onChange={(e) => setActiveSeId(e.target.value)}>
             <option value="" disabled>
-              -- chọn --
+              -- select --
             </option>
             {subEvents.map((se) => (
               <option key={se.id} value={se.id}>
@@ -804,7 +804,7 @@ const CreateEventWizard = () => {
                 {internalResources.length === 0 ? (
                   <tr>
                     <td colSpan={5} style={{ padding: 12, textAlign: "center" }}>
-                      Chưa có
+                      No data
                     </td>
                   </tr>
                 ) : (
@@ -847,7 +847,7 @@ const CreateEventWizard = () => {
                 {externalResources.length === 0 ? (
                   <tr>
                     <td colSpan={4} style={{ padding: 12, textAlign: "center" }}>
-                      Chưa có
+                      No data
                     </td>
                   </tr>
                 ) : (
@@ -875,7 +875,7 @@ const CreateEventWizard = () => {
       </div>
 
       <div className="md-text-muted" style={{ marginTop: 10 }}>
-        (UI demo tối giản) — Bạn có thể “port” UI đẹp từ `resources-allocation.html` vào đây sau.
+        (Minimal UI demo) — You can "port" nice UI from `resources-allocation.html` here later.
       </div>
     </div>
   );
@@ -893,7 +893,7 @@ const CreateEventWizard = () => {
         <div className="md-field">
           <label>Sub-Event *</label>
           <select value={taskDraft.subEventId} onChange={(e) => setTaskDraft((p) => ({ ...p, subEventId: e.target.value }))}>
-            <option value="">-- chọn --</option>
+            <option value="">-- select --</option>
             {subEvents.map((se) => (
               <option key={se.id} value={se.id}>
                 {se.name}
@@ -940,7 +940,7 @@ const CreateEventWizard = () => {
             {tasks.length === 0 ? (
               <tr>
                 <td colSpan={6} style={{ padding: 16, textAlign: "center" }}>
-                  Chưa có task
+                  No tasks
                 </td>
               </tr>
             ) : (
@@ -985,7 +985,7 @@ const CreateEventWizard = () => {
       <div className="md-card">
         <h2>5. Review</h2>
         <p className="md-text-muted">
-          Bước này tương đương `review.html` — đọc 5 key trong sessionStorage và tổng hợp lại.
+          This step is equivalent to `review.html` — read 5 keys from sessionStorage and summarize.
         </p>
 
         <div className="md-content-grid">
@@ -1106,7 +1106,7 @@ const CreateEventWizard = () => {
               SS.set("internalResources", intr);
               SS.set("externalResources", extr);
               SS.set("tasks", tks);
-              alert("Đã lưu draft vào sessionStorage ✔");
+              alert("Draft saved to sessionStorage ✔");
             }}
           >
             Save Draft

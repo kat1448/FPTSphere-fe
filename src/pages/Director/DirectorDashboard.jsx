@@ -10,10 +10,10 @@ import {
   UserOutlined,
   TeamOutlined
 } from "@ant-design/icons";
-import { Input, Select, Table, Avatar, Tag, Progress, Button, Card, Statistic, Row, Col, message } from "antd";
-import { CheckCircleOutlined as ApproveIcon } from "@ant-design/icons";
+import { Input, Select, Table, Avatar, Tag, Progress, Button, Card, Statistic, Row, Col, message, Modal, Space } from "antd";
+import { CheckCircleOutlined as ApproveIcon, SwapOutlined, FileTextOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { getEvents } from "../../services/events.api";
+import { getEvents, getEventById, updateEvent, changeEventStatus } from "../../services/events.api";
 import authService from "../../services/authService";
 
 const { Option } = Select;
@@ -27,6 +27,7 @@ const DirectorDashboard = () => {
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [loadingStatusChange, setLoadingStatusChange] = useState(false);
 
   const displayName = user?.fullName || "Director";
   const roleName = user?.roleName || "Director";
@@ -275,6 +276,127 @@ const DirectorDashboard = () => {
     return filtered;
   }, [events, searchText, statusFilter, typeFilter]);
 
+  const handleChangeEventStatus = async (record) => {
+    const isApproved = record.statusId === 3 || record.status === "Approved";
+    const isInProgress = record.statusId === 4 || record.status === "In Progress";
+    
+    let newStatusId;
+    let newStatusName;
+    let confirmTitle;
+    let confirmContent;
+    
+    if (isApproved) {
+      // From Approved (3) -> In Progress (4)
+      newStatusId = 4;
+      newStatusName = "In Progress";
+      confirmTitle = "Start Event";
+      confirmContent = "Are you sure you want to start this event? This will change the status to 'In Progress'.";
+    } else if (isInProgress) {
+      // From In Progress (4) -> Completed (5)
+      newStatusId = 5;
+      newStatusName = "Completed";
+      confirmTitle = "Complete Event";
+      confirmContent = "Are you sure you want to complete this event? This will change the status to 'Completed'.";
+    } else {
+      return;
+    }
+    
+    Modal.confirm({
+      title: confirmTitle,
+      content: confirmContent,
+      okText: "Confirm",
+      cancelText: "Cancel",
+      okButtonProps: { type: "primary" },
+      onOk: async () => {
+        try {
+          setLoadingStatusChange(true);
+          
+          // Call new change-status API
+          await changeEventStatus(record.eventId, newStatusId);
+          
+          message.success(`Event status changed to ${newStatusName} successfully.`);
+          
+          // Reload events list
+          const params = {
+            page: 1,
+            pageSize: 100,
+            includeDeleted: false,
+            sortBy: "CreatedAt",
+            sortDescending: true,
+          };
+          
+          const response = await getEvents(params);
+          let eventsList = [];
+          if (response && response.data && Array.isArray(response.data)) {
+            eventsList = response.data;
+          } else if (Array.isArray(response)) {
+            eventsList = response;
+          }
+          
+          const mainEvents = eventsList.filter((ev) => {
+            const parentId = ev.parentEventId;
+            return parentId === null || parentId === undefined;
+          });
+          
+          const transformedEvents = mainEvents.map((event) => {
+            let locationName = "Location TBD";
+            if (event.location) {
+              locationName = event.location.name || 
+                            event.location.roomNumber || 
+                            locationName;
+            } else if (event.externalLocation) {
+              locationName = event.externalLocation.name || locationName;
+            }
+            
+            const statusMap = {
+              1: "Draft",
+              2: "Pending Approval",
+              3: "Approved",
+              4: "In Progress",
+              5: "Completed",
+              6: "Cancelled",
+              7: "Rejected"
+            };
+            const status = statusMap[event.statusId] || event.status?.statusName || "Draft";
+            const startTime = dayjs(event.startTime);
+            
+            return {
+              key: event.eventId,
+              id: event.eventId,
+              eventId: event.eventId,
+              eventName: event.eventName || "Untitled Event",
+              type: event.typeName || "Conference",
+              date: event.startTime,
+              time: startTime.format("hh:mm A"),
+              timezone: "UTC",
+              status: status,
+              statusId: event.statusId,
+              attendees: {
+                current: event.expectedAttendees || 0,
+                max: event.expectedAttendees || 0,
+              },
+              location: locationName,
+              startTime: event.startTime,
+              endTime: event.endTime,
+              description: event.description,
+              bannerUrl: event.bannerUrl,
+              creator: event.creator,
+              categoryName: event.categoryName,
+            };
+          });
+          
+          setAllEvents(mainEvents);
+          setEvents(transformedEvents);
+        } catch (error) {
+          console.error("Error changing event status:", error);
+          message.error(error.message || "Failed to change event status");
+        } finally {
+          setLoadingStatusChange(false);
+        }
+      },
+    });
+  };
+
   // Table columns
   const columns = [
     {
@@ -407,13 +529,19 @@ const DirectorDashboard = () => {
     {
       title: "ACTIONS",
       key: "actions",
-      width: 200,
+      width: 250,
       render: (_, record) => {
         // Only events with statusId = 2 (Pending Approval) can be approved
         const canApprove = record.statusId === 2;
+        // Events with status Approved (3) or In Progress (4) can change status
+        const isApproved = record.statusId === 3 || record.status === "Approved";
+        const isInProgress = record.statusId === 4 || record.status === "In Progress";
+        const canChangeStatus = isApproved || isInProgress;
+        // Events with status Completed (5) can view report
+        const isCompleted = record.statusId === 5 || record.status === "Completed";
         
         return (
-          <div className="flex items-center gap-2">
+          <Space>
             <Button
               type="link"
               onClick={() => {
@@ -436,7 +564,40 @@ const DirectorDashboard = () => {
                 Approve
               </Button>
             )}
-          </div>
+            {canChangeStatus && (
+              <Button
+                type="primary"
+                size="small"
+                icon={<SwapOutlined />}
+                onClick={() => handleChangeEventStatus(record)}
+                loading={loadingStatusChange}
+                style={{ 
+                  background: isApproved ? "#52c41a" : "#1890ff",
+                  borderColor: isApproved ? "#52c41a" : "#1890ff",
+                  fontSize: "12px"
+                }}
+              >
+                {isApproved ? "Start Event" : "Complete Event"}
+              </Button>
+            )}
+            {isCompleted && (
+              <Button
+                type="primary"
+                size="small"
+                icon={<FileTextOutlined />}
+                onClick={() => {
+                  navigate(`/event/${record.eventId || record.id}/report`);
+                }}
+                style={{ 
+                  background: "#722ed1",
+                  borderColor: "#722ed1",
+                  fontSize: "12px"
+                }}
+              >
+                View Report
+              </Button>
+            )}
+          </Space>
         );
       },
     },

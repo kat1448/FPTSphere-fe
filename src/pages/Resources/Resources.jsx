@@ -88,7 +88,7 @@ const Resources = () => {
       }
     } catch (error) {
       console.error("Error loading resources:", error);
-      message.error("Không thể tải danh sách tài nguyên");
+      message.error("Unable to load resources list");
     } finally {
       setLoading(false);
     }
@@ -104,7 +104,7 @@ const Resources = () => {
     const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
     if (!CLOUD_NAME || !UPLOAD_PRESET) {
-      message.warning("Cloudinary chưa được cấu hình");
+      message.warning("Cloudinary is not configured");
       return "null";
     }
 
@@ -165,10 +165,10 @@ const Resources = () => {
 
       if (editingResource) {
         await updateResource(editingResource.resourceId, resourceData);
-        message.success("Cập nhật tài nguyên thành công");
+        message.success("Resource updated successfully");
       } else {
         await createResource(resourceData);
-        message.success("Tạo tài nguyên thành công");
+        message.success("Resource created successfully");
       }
 
       setShowModal(false);
@@ -177,7 +177,7 @@ const Resources = () => {
       loadResources(pagination.current, pagination.pageSize);
     } catch (error) {
       console.error("Error saving resource:", error);
-      message.error(error.message || "Không thể lưu tài nguyên");
+      message.error(error.message || "Unable to save resource");
     } finally {
       setLoading(false);
     }
@@ -205,7 +205,7 @@ const Resources = () => {
       setShowModal(true);
     } catch (error) {
       console.error("Error loading resource:", error);
-      message.error("Không thể tải thông tin tài nguyên");
+      message.error("Unable to load resource information");
     } finally {
       setLoading(false);
     }
@@ -216,11 +216,11 @@ const Resources = () => {
     try {
       setLoading(true);
       await deleteResource(resourceId);
-      message.success("Xóa tài nguyên thành công");
+      message.success("Resource deleted successfully");
       loadResources(pagination.current, pagination.pageSize);
     } catch (error) {
       console.error("Error deleting resource:", error);
-      message.error(error.message || "Không thể xóa tài nguyên");
+      message.error(error.message || "Unable to delete resource");
     } finally {
       setLoading(false);
     }
@@ -244,7 +244,7 @@ const Resources = () => {
       });
     } catch (error) {
       console.error("Error searching resources:", error);
-      message.error("Không thể tìm kiếm tài nguyên");
+      message.error("Unable to search resources");
     } finally {
       setLoading(false);
     }
@@ -269,7 +269,7 @@ const Resources = () => {
   // Table columns
   const columns = [
     {
-      title: "Tên tài nguyên",
+      title: "Resource Name",
       dataIndex: "name",
       key: "name",
       render: (text, record) => (
@@ -289,33 +289,33 @@ const Resources = () => {
       ),
     },
     {
-      title: "Loại",
+      title: "Type",
       dataIndex: "type",
       key: "type",
       render: (text) => <Tag>{text}</Tag>,
     },
     {
-      title: "Số lượng",
+      title: "Quantity",
       dataIndex: "quantity",
       key: "quantity",
       render: (quantity) => quantity?.toLocaleString() || 0,
     },
     {
-      title: "Trạng thái",
+      title: "Status",
       dataIndex: "isActive",
       key: "isActive",
       render: (isActive) => (
         <Tag color={isActive ? "green" : "red"}>
-          {isActive ? "Hoạt động" : "Không hoạt động"}
+          {isActive ? "Active" : "Inactive"}
         </Tag>
       ),
     },
     {
-      title: "Hành động",
+      title: "Actions",
       key: "actions",
       render: (_, record) => {
         if (isEventManager) {
-          return <span className="text-gray-400 text-sm">Chỉ xem</span>;
+          return <span className="text-gray-400 text-sm">View only</span>;
         }
         return (
           <Space>
@@ -324,21 +324,21 @@ const Resources = () => {
               icon={<EditOutlined />}
               onClick={() => handleEdit(record.resourceId)}
             >
-              Sửa
+              Edit
             </Button>
             <Popconfirm
-              title="Xác nhận xóa"
-              description="Bạn có chắc chắn muốn xóa tài nguyên này?"
+              title="Confirm Delete"
+              description="Are you sure you want to delete this resource?"
               onConfirm={() => handleDelete(record.resourceId)}
-              okText="Xóa"
-              cancelText="Hủy"
+              okText="Delete"
+              cancelText="Cancel"
             >
               <Button
                 type="link"
                 danger
                 icon={<DeleteOutlined />}
               >
-                Xóa
+                Delete
               </Button>
             </Popconfirm>
           </Space>
@@ -351,15 +351,15 @@ const Resources = () => {
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý tài nguyên</h1>
-          <p className="text-gray-600 mt-1">Quản lý các tài nguyên sự kiện</p>
+          <h1 className="text-2xl font-bold text-gray-900">Resource Management</h1>
+          <p className="text-gray-600 mt-1">Manage event resources</p>
         </div>
         <Space>
           <Button
             icon={<ReloadOutlined />}
             onClick={() => loadResources(pagination.current, pagination.pageSize)}
           >
-            Làm mới
+            Refresh
           </Button>
           {!isEventManager && (
             <Button
@@ -372,7 +372,7 @@ const Resources = () => {
               }}
               style={{ backgroundColor: "#F2721E", borderColor: "#F2721E" }}
             >
-              Thêm tài nguyên
+              Add Resource
             </Button>
           )}
         </Space>
@@ -381,7 +381,7 @@ const Resources = () => {
       <Card>
         <div className="mb-4 flex items-center gap-4">
           <Input
-            placeholder="Tìm kiếm tài nguyên..."
+            placeholder="Search resources..."
             prefix={<SearchOutlined />}
             value={searchText}
             onChange={(e) => {
@@ -394,12 +394,12 @@ const Resources = () => {
             style={{ width: 300 }}
           />
           <Select
-            placeholder="Lọc theo loại"
+            placeholder="Filter by type"
             value={typeFilter}
             onChange={setTypeFilter}
             style={{ width: 200 }}
           >
-            <Option value="all">Tất cả loại</Option>
+            <Option value="all">All Types</Option>
             {uniqueTypes.map((type) => (
               <Option key={type} value={type}>
                 {type}
@@ -418,7 +418,7 @@ const Resources = () => {
             pageSize: pagination.pageSize,
             total: pagination.total,
             showSizeChanger: true,
-            showTotal: (total) => `Tổng ${total} tài nguyên`,
+            showTotal: (total) => `Total ${total} resources`,
             onChange: (page, pageSize) => {
               loadResources(page, pageSize);
             },
@@ -428,7 +428,7 @@ const Resources = () => {
 
       {/* Create/Edit Modal */}
       <Modal
-        title={editingResource ? "Chỉnh sửa tài nguyên" : "Thêm tài nguyên mới"}
+        title={editingResource ? "Edit Resource" : "Add New Resource"}
         open={showModal}
         onCancel={() => {
           setShowModal(false);
@@ -445,36 +445,36 @@ const Resources = () => {
         >
           <Form.Item
             name="name"
-            label="Tên tài nguyên"
-            rules={[{ required: true, message: "Vui lòng nhập tên tài nguyên" }]}
+            label="Resource Name"
+            rules={[{ required: true, message: "Please enter resource name" }]}
           >
-            <Input placeholder="VD: Máy chiếu" />
+            <Input placeholder="E.g: Projector" />
           </Form.Item>
 
           <Form.Item
             name="type"
-            label="Loại"
-            rules={[{ required: true, message: "Vui lòng nhập loại tài nguyên" }]}
+            label="Type"
+            rules={[{ required: true, message: "Please enter resource type" }]}
           >
-            <Input placeholder="VD: Thiết bị" />
+            <Input placeholder="E.g: Equipment" />
           </Form.Item>
 
           <Form.Item
             name="quantity"
-            label="Số lượng"
+            label="Quantity"
             rules={[
-              { required: true, message: "Vui lòng nhập số lượng" },
-              { type: "number", min: 0, message: "Số lượng phải lớn hơn hoặc bằng 0" },
+              { required: true, message: "Please enter quantity" },
+              { type: "number", min: 0, message: "Quantity must be greater than or equal to 0" },
             ]}
           >
             <InputNumber
-              placeholder="VD: 10"
+              placeholder="E.g: 10"
               style={{ width: "100%" }}
               min={0}
             />
           </Form.Item>
 
-          <Form.Item name="image" label="Hình ảnh">
+          <Form.Item name="image" label="Image">
             <Upload
               listType="picture-card"
               maxCount={1}
@@ -495,7 +495,7 @@ const Resources = () => {
                 loading={loading || uploadingImage}
                 style={{ backgroundColor: "#F2721E", borderColor: "#F2721E" }}
               >
-                {editingResource ? "Cập nhật" : "Tạo tài nguyên"}
+                {editingResource ? "Update" : "Create Resource"}
               </Button>
               <Button
                 onClick={() => {
@@ -504,7 +504,7 @@ const Resources = () => {
                   setEditingResource(null);
                 }}
               >
-                Hủy
+                Cancel
               </Button>
             </Space>
           </Form.Item>

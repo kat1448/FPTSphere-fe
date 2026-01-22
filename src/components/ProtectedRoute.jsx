@@ -3,14 +3,14 @@ import { useAuth } from "../contexts/AuthContext";
 import Forbidden403 from "../pages/Errors/Forbidden403";
 
 /**
- * ProtectedRoute với phân quyền dựa trên roleId và roleName
+ * ProtectedRoute with role-based authorization using roleId and roleName
  * 
  * @param {Object} props
- * @param {ReactNode} props.children - Component con cần được bảo vệ
- * @param {Array<number>} props.allowedRoleIds - Mảng roleId được phép (1=Admin, 2=Director, 3=Event Manager, 4=Staff, 5=Student)
- * @param {Array<string>} props.allowedRoles - Mảng roleName được phép (fallback nếu không có roleId)
- * @param {number} props.requiredRoleId - RoleId bắt buộc (single)
- * @param {string} props.requiredRole - RoleName bắt buộc (single, fallback)
+ * @param {ReactNode} props.children - Child component that needs protection
+ * @param {Array<number>} props.allowedRoleIds - Array of allowed roleIds (1=Admin, 2=Director, 3=Event Manager, 4=Staff, 5=Student)
+ * @param {Array<string>} props.allowedRoles - Array of allowed roleNames (fallback if no roleId)
+ * @param {number} props.requiredRoleId - Required roleId (single)
+ * @param {string} props.requiredRole - Required roleName (single, fallback)
  */
 const ProtectedRoute = ({ 
   children, 
@@ -32,12 +32,12 @@ const ProtectedRoute = ({
         fontSize: "16px",
         color: "#666"
       }}>
-        Đang tải...
+        Loading...
       </div>
     );
   }
 
-  // Chưa đăng nhập -> redirect to login
+  // Not logged in -> redirect to login
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
@@ -51,7 +51,7 @@ const ProtectedRoute = ({
   console.log(`📋 Allowed roleIds:`, allowedRoleIds);
   console.log(`📋 Allowed roles:`, allowedRoles);
 
-  // Xác định roles được phép
+  // Determine allowed roles
   let allowedRoleIdsList = [];
   
   if (allowedRoleIds && allowedRoleIds.length > 0) {

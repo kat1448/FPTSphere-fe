@@ -120,7 +120,7 @@ const EmailEditor = () => {
         }
       } catch (error) {
         console.error("❌ Error loading sub-event:", error);
-        message.error("Không thể tải dữ liệu sự kiện");
+        message.error("Failed to load event data");
       }
     };
 

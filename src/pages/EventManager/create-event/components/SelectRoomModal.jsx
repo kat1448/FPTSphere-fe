@@ -501,7 +501,7 @@ export default function SelectRoomModal({
             rules={[{ required: true, message: "Please enter location name" }]}
           >
             <Input
-              placeholder="e.g., ĐH FPT Hà Nội Beta"
+              placeholder="e.g., FPT University Hanoi Beta"
               size="large"
               style={{ fontSize: "14px" }}
             />

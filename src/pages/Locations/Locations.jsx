@@ -131,7 +131,7 @@ const Locations = () => {
       }
     } catch (error) {
       console.error("Error loading locations:", error);
-      message.error("Không thể tải danh sách địa điểm");
+      message.error("Unable to load locations list");
     } finally {
       setLoading(false);
     }
@@ -161,7 +161,7 @@ const Locations = () => {
       }
     } catch (error) {
       console.error("Error loading external locations:", error);
-      message.error("Không thể tải danh sách địa điểm bên ngoài");
+      message.error("Unable to load external locations list");
     } finally {
       setLoading(false);
     }
@@ -196,7 +196,7 @@ const Locations = () => {
     const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
     if (!CLOUD_NAME || !UPLOAD_PRESET) {
-      message.warning("Cloudinary chưa được cấu hình");
+      message.warning("Cloudinary is not configured");
       return "null";
     }
 
@@ -254,13 +254,13 @@ const Locations = () => {
       };
 
       await createLocation(locationData);
-      message.success("Tạo địa điểm thành công");
+      message.success("Location created successfully");
       setShowCreateModal(false);
       form.resetFields();
       loadLocations();
     } catch (error) {
       console.error("Error creating location:", error);
-      message.error(error.message || "Không thể tạo địa điểm");
+      message.error(error.message || "Unable to create location");
     } finally {
       setLoading(false);
     }
@@ -291,13 +291,13 @@ const Locations = () => {
       };
 
       await createExternalLocation(locationData);
-      message.success("Tạo địa điểm bên ngoài thành công");
+      message.success("External location created successfully");
       setShowExternalModal(false);
       externalForm.resetFields();
       loadExternalLocations();
     } catch (error) {
       console.error("Error creating external location:", error);
-      message.error(error.message || "Không thể tạo địa điểm bên ngoài");
+      message.error(error.message || "Unable to create external location");
     } finally {
       setLoading(false);
     }
@@ -323,7 +323,7 @@ const Locations = () => {
       });
       setShowEditModal(true);
     } catch (e) {
-      message.error(e.message || "Không thể tải thông tin địa điểm");
+      message.error(e.message || "Unable to load location information");
     } finally {
       setLoading(false);
     }
@@ -349,13 +349,13 @@ const Locations = () => {
       };
 
       await updateLocation(editingLocation.locationId, payload);
-      message.success("Cập nhật địa điểm thành công");
+      message.success("Location updated successfully");
       setShowEditModal(false);
       setEditingLocation(null);
       editForm.resetFields();
       loadLocations(pagination.current, pagination.pageSize);
     } catch (e) {
-      message.error(e.message || "Không thể cập nhật địa điểm");
+      message.error(e.message || "Unable to update location");
     } finally {
       setLoading(false);
     }
@@ -363,19 +363,19 @@ const Locations = () => {
 
   const confirmDeleteLocation = (record) => {
     Modal.confirm({
-      title: "Xóa địa điểm",
-      content: `Bạn chắc chắn muốn xóa "${record?.name}"? Hành động này không thể hoàn tác.`,
-      okText: "Xóa",
+      title: "Delete Location",
+      content: `Are you sure you want to delete "${record?.name}"? This action cannot be undone.`,
+      okText: "Delete",
       okButtonProps: { danger: true },
-      cancelText: "Hủy",
+      cancelText: "Cancel",
       onOk: async () => {
         try {
           setLoading(true);
           await deleteLocation(record.locationId);
-          message.success("Đã xóa địa điểm");
+          message.success("Location deleted successfully");
           loadLocations(1, pagination.pageSize);
         } catch (e) {
-          message.error(e.message || "Không thể xóa địa điểm");
+          message.error(e.message || "Unable to delete location");
         } finally {
           setLoading(false);
         }
@@ -385,20 +385,20 @@ const Locations = () => {
 
   const confirmToggleLocation = (record) => {
     Modal.confirm({
-      title: record?.isActive ? "Tắt địa điểm" : "Bật địa điểm",
-      content: `Bạn chắc chắn muốn ${
-        record?.isActive ? "tắt" : "bật"
+      title: record?.isActive ? "Deactivate Location" : "Activate Location",
+      content: `Are you sure you want to ${
+        record?.isActive ? "deactivate" : "activate"
       } "${record?.name}"?`,
-      okText: record?.isActive ? "Tắt" : "Bật",
-      cancelText: "Hủy",
+      okText: record?.isActive ? "Deactivate" : "Activate",
+      cancelText: "Cancel",
       onOk: async () => {
         try {
           setLoading(true);
           await toggleLocation(record.locationId);
-          message.success("Đã cập nhật trạng thái");
+          message.success("Status updated successfully");
           loadLocations(pagination.current, pagination.pageSize);
         } catch (e) {
-          message.error(e.message || "Không thể cập nhật trạng thái");
+          message.error(e.message || "Unable to update status");
         } finally {
           setLoading(false);
         }
@@ -442,13 +442,13 @@ const Locations = () => {
       };
 
       await updateExternalLocation(editingExternalLocation.externalLocationId, payload);
-      message.success("Cập nhật địa điểm bên ngoài thành công");
+      message.success("External location updated successfully");
       setShowExternalEditModal(false);
       setEditingExternalLocation(null);
       externalEditForm.resetFields();
       loadExternalLocations(externalPagination.current, externalPagination.pageSize);
     } catch (e) {
-      message.error(e.message || "Không thể cập nhật địa điểm bên ngoài");
+      message.error(e.message || "Unable to update external location");
     } finally {
       setLoading(false);
     }
@@ -456,19 +456,19 @@ const Locations = () => {
 
   const confirmDeleteExternalLocation = (record) => {
     Modal.confirm({
-      title: "Xóa địa điểm bên ngoài",
-      content: `Bạn chắc chắn muốn xóa "${record?.name}"? Hành động này không thể hoàn tác.`,
-      okText: "Xóa",
+      title: "Delete External Location",
+      content: `Are you sure you want to delete "${record?.name}"? This action cannot be undone.`,
+      okText: "Delete",
       okButtonProps: { danger: true },
-      cancelText: "Hủy",
+      cancelText: "Cancel",
       onOk: async () => {
         try {
           setLoading(true);
           await deleteExternalLocation(record.externalLocationId);
-          message.success("Đã xóa địa điểm bên ngoài");
+          message.success("External location deleted successfully");
           loadExternalLocations(1, externalPagination.pageSize);
         } catch (e) {
-          message.error(e.message || "Không thể xóa địa điểm bên ngoài");
+          message.error(e.message || "Unable to delete external location");
         } finally {
           setLoading(false);
         }
@@ -479,7 +479,7 @@ const Locations = () => {
   // Internal locations columns
   const internalColumns = [
     {
-      title: "Tên địa điểm",
+      title: "Location Name",
       dataIndex: "name",
       key: "name",
       render: (text, record) => (
@@ -490,34 +490,34 @@ const Locations = () => {
       ),
     },
     {
-      title: "Tòa nhà",
+      title: "Building",
       dataIndex: "building",
       key: "building",
       render: (text) => <Tag icon={<HomeOutlined />}>{text}</Tag>,
     },
     {
-      title: "Sức chứa",
+      title: "Capacity",
       dataIndex: "capacity",
       key: "capacity",
-      render: (capacity) => `${capacity?.toLocaleString() || 0} người`,
+      render: (capacity) => `${capacity?.toLocaleString() || 0} people`,
     },
     {
-      title: "Trạng thái",
+      title: "Status",
       dataIndex: "isActive",
       key: "isActive",
       render: (isActive) => (
         <Tag color={isActive ? "green" : "red"}>
-          {isActive ? "Hoạt động" : "Không hoạt động"}
+          {isActive ? "Active" : "Inactive"}
         </Tag>
       ),
     },
     {
-      title: "Hành động",
+      title: "Actions",
       key: "actions",
       width: 200,
       render: (_, record) => {
         if (isEventManager) {
-          return <span className="text-gray-400 text-sm">Chỉ xem</span>;
+          return <span className="text-gray-400 text-sm">View only</span>;
         }
         return (
           <Space>
@@ -528,14 +528,14 @@ const Locations = () => {
                 openEditLocation(record);
               }}
             >
-              Sửa
+              Edit
             </Button>
             <Button
               type="link"
               icon={<SwapOutlined />}
               onClick={() => confirmToggleLocation(record)}
             >
-              {record.isActive ? "Tắt" : "Bật"}
+              {record.isActive ? "Deactivate" : "Activate"}
             </Button>
             <Button
               type="link"
@@ -543,7 +543,7 @@ const Locations = () => {
               icon={<DeleteOutlined />}
               onClick={() => confirmDeleteLocation(record)}
             >
-              Xóa
+              Delete
             </Button>
           </Space>
         );
@@ -554,38 +554,38 @@ const Locations = () => {
   // External locations columns
   const externalColumns = [
     {
-      title: "Tên địa điểm",
+      title: "Location Name",
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Địa chỉ",
+      title: "Address",
       dataIndex: "address",
       key: "address",
     },
     {
-      title: "Người liên hệ",
+      title: "Contact Person",
       dataIndex: "contactPerson",
       key: "contactPerson",
     },
     {
-      title: "Số điện thoại",
+      title: "Phone Number",
       dataIndex: "contactPhone",
       key: "contactPhone",
     },
     {
-      title: "Chi phí",
+      title: "Cost",
       dataIndex: "cost",
       key: "cost",
       render: (cost) => cost ? `${cost.toLocaleString()} VNĐ` : "-",
     },
     {
-      title: "Hành động",
+      title: "Actions",
       key: "actions",
       width: 150,
       render: (_, record) => {
         if (isEventManager) {
-          return <span className="text-gray-400 text-sm">Chỉ xem</span>;
+          return <span className="text-gray-400 text-sm">View only</span>;
         }
         return (
           <Space>
@@ -594,7 +594,7 @@ const Locations = () => {
               icon={<EditOutlined />}
               onClick={() => openEditExternalLocation(record)}
             >
-              Sửa
+              Edit
             </Button>
             <Button
               type="link"
@@ -602,7 +602,7 @@ const Locations = () => {
               icon={<DeleteOutlined />}
               onClick={() => confirmDeleteExternalLocation(record)}
             >
-              Xóa
+              Delete
             </Button>
           </Space>
         );
@@ -614,8 +614,8 @@ const Locations = () => {
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý địa điểm</h1>
-          <p className="text-gray-600 mt-1">Quản lý địa điểm nội bộ và bên ngoài</p>
+          <h1 className="text-2xl font-bold text-gray-900">Location Management</h1>
+          <p className="text-gray-600 mt-1">Manage internal and external locations</p>
         </div>
         {/* Admin/Director có thể tạo cả internal & external; Event Manager chỉ được tạo external */}
         {((!isEventManager && roleId !== 4) || (isEventManager && activeTab === "external")) && (
@@ -631,29 +631,29 @@ const Locations = () => {
             }}
             style={{ backgroundColor: "#F2721E", borderColor: "#F2721E" }}
           >
-            {activeTab === "internal" ? "Thêm địa điểm" : "Thêm địa điểm bên ngoài"}
+            {activeTab === "internal" ? "Add Location" : "Add External Location"}
           </Button>
         )}
       </div>
 
       <Card>
         <Tabs activeKey={activeTab} onChange={setActiveTab}>
-          <TabPane tab="Địa điểm nội bộ" key="internal">
+          <TabPane tab="Internal Locations" key="internal">
             <div className="mb-4 flex flex-wrap items-center gap-4">
               <Input
-                placeholder="Tìm kiếm địa điểm..."
+                placeholder="Search locations..."
                 prefix={<SearchOutlined />}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 style={{ width: 300 }}
               />
               <Select
-                placeholder="Lọc theo tòa nhà"
+                placeholder="Filter by building"
                 value={buildingFilter}
                 onChange={setBuildingFilter}
                 style={{ width: 200 }}
               >
-                <Option value="all">Tất cả tòa nhà</Option>
+                <Option value="all">All Buildings</Option>
                 {uniqueBuildings.map((building) => (
                   <Option key={building} value={building}>
                     {building}
@@ -661,26 +661,26 @@ const Locations = () => {
                 ))}
               </Select>
               <Select
-                placeholder="Lọc trạng thái"
+                placeholder="Filter by status"
                 value={isActiveFilter}
                 onChange={setIsActiveFilter}
                 style={{ width: 180 }}
               >
-                <Option value="all">Tất cả</Option>
-                <Option value="active">Hoạt động</Option>
-                <Option value="inactive">Không hoạt động</Option>
+                <Option value="all">All</Option>
+                <Option value="active">Active</Option>
+                <Option value="inactive">Inactive</Option>
               </Select>
               <Select
                 value={sortBy}
                 onChange={setSortBy}
                 style={{ width: 180 }}
               >
-                <Option value="Name">Sắp xếp: Tên</Option>
-                <Option value="Capacity">Sắp xếp: Sức chứa</Option>
-                <Option value="Building">Sắp xếp: Tòa nhà</Option>
+                <Option value="Name">Sort by: Name</Option>
+                <Option value="Capacity">Sort by: Capacity</Option>
+                <Option value="Building">Sort by: Building</Option>
               </Select>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Giảm dần</span>
+                <span className="text-sm text-gray-500">Descending</span>
                 <Switch checked={sortDescending} onChange={setSortDescending} />
               </div>
             </div>
@@ -695,7 +695,7 @@ const Locations = () => {
                 pageSize: pagination.pageSize,
                 total: pagination.total,
                 showSizeChanger: true,
-                showTotal: (total) => `Tổng ${total} địa điểm`,
+                showTotal: (total) => `Total ${total} locations`,
                 onChange: (page, pageSize) => {
                   loadLocations(page, pageSize);
                 },
@@ -703,10 +703,10 @@ const Locations = () => {
             />
           </TabPane>
 
-          <TabPane tab="Địa điểm bên ngoài" key="external">
+          <TabPane tab="External Locations" key="external">
             <div className="mb-4 flex flex-wrap items-center gap-4">
               <Input
-                placeholder="Tìm kiếm địa điểm..."
+                placeholder="Search locations..."
                 prefix={<SearchOutlined />}
                 value={externalSearchText}
                 onChange={(e) => setExternalSearchText(e.target.value)}
@@ -733,11 +733,11 @@ const Locations = () => {
                 onChange={setExternalSortBy}
                 style={{ width: 180 }}
               >
-                <Option value="Name">Sắp xếp: Tên</Option>
-                <Option value="Cost">Sắp xếp: Chi phí</Option>
+                <Option value="Name">Sort by: Name</Option>
+                <Option value="Cost">Sort by: Cost</Option>
               </Select>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Giảm dần</span>
+                <span className="text-sm text-gray-500">Descending</span>
                 <Switch
                   checked={externalSortDescending}
                   onChange={setExternalSortDescending}
@@ -754,7 +754,7 @@ const Locations = () => {
                 pageSize: externalPagination.pageSize,
                 total: externalPagination.total,
                 showSizeChanger: true,
-                showTotal: (total) => `Tổng ${total} địa điểm`,
+                showTotal: (total) => `Total ${total} locations`,
                 onChange: (page, pageSize) => {
                   loadExternalLocations(page, pageSize);
                 },
@@ -766,7 +766,7 @@ const Locations = () => {
 
       {/* Create Internal Location Modal */}
       <Modal
-        title="Thêm địa điểm mới"
+        title="Add New Location"
         open={showCreateModal}
         onCancel={() => {
           setShowCreateModal(false);
@@ -782,44 +782,44 @@ const Locations = () => {
         >
           <Form.Item
             name="name"
-            label="Tên địa điểm"
-            rules={[{ required: true, message: "Vui lòng nhập tên địa điểm" }]}
+            label="Location Name"
+            rules={[{ required: true, message: "Please enter location name" }]}
           >
-            <Input placeholder="VD: Phòng AL-404" />
+            <Input placeholder="E.g: Room AL-404" />
           </Form.Item>
 
           <Form.Item
             name="building"
-            label="Tòa nhà"
-            rules={[{ required: true, message: "Vui lòng nhập tòa nhà" }]}
+            label="Building"
+            rules={[{ required: true, message: "Please enter building" }]}
           >
-            <Input placeholder="VD: ALPHA" />
+            <Input placeholder="E.g: ALPHA" />
           </Form.Item>
 
           <Form.Item
             name="roomNumber"
-            label="Số phòng"
-            rules={[{ required: true, message: "Vui lòng nhập số phòng" }]}
+            label="Room Number"
+            rules={[{ required: true, message: "Please enter room number" }]}
           >
-            <Input placeholder="VD: AL-404" />
+            <Input placeholder="E.g: AL-404" />
           </Form.Item>
 
           <Form.Item
             name="capacity"
-            label="Sức chứa"
+            label="Capacity"
             rules={[
-              { required: true, message: "Vui lòng nhập sức chứa" },
-              { type: "number", min: 1, message: "Sức chứa phải lớn hơn 0" },
+              { required: true, message: "Please enter capacity" },
+              { type: "number", min: 1, message: "Capacity must be greater than 0" },
             ]}
           >
             <InputNumber
-              placeholder="VD: 50"
+              placeholder="E.g: 50"
               style={{ width: "100%" }}
               min={1}
             />
           </Form.Item>
 
-          <Form.Item name="image" label="Hình ảnh">
+          <Form.Item name="image" label="Image">
             <Upload
               listType="picture-card"
               maxCount={1}
@@ -840,13 +840,13 @@ const Locations = () => {
                 loading={loading || uploadingImage}
                 style={{ backgroundColor: "#F2721E", borderColor: "#F2721E" }}
               >
-                Tạo địa điểm
+                Create Location
               </Button>
               <Button onClick={() => {
                 setShowCreateModal(false);
                 form.resetFields();
               }}>
-                Hủy
+                Cancel
               </Button>
             </Space>
           </Form.Item>
@@ -855,7 +855,7 @@ const Locations = () => {
 
       {/* Create External Location Modal */}
       <Modal
-        title="Thêm địa điểm bên ngoài"
+        title="Add External Location"
         open={showExternalModal}
         onCancel={() => {
           setShowExternalModal(false);
@@ -871,42 +871,42 @@ const Locations = () => {
         >
           <Form.Item
             name="name"
-            label="Tên địa điểm"
-            rules={[{ required: true, message: "Vui lòng nhập tên địa điểm" }]}
+            label="Location Name"
+            rules={[{ required: true, message: "Please enter location name" }]}
           >
-            <Input placeholder="VD: Trung tâm Hội nghị Quốc gia" />
+            <Input placeholder="E.g: National Convention Center" />
           </Form.Item>
 
           <Form.Item
             name="address"
-            label="Địa chỉ"
-            rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
+            label="Address"
+            rules={[{ required: true, message: "Please enter address" }]}
           >
-            <Input.TextArea rows={2} placeholder="Địa chỉ chi tiết" />
+            <Input.TextArea rows={2} placeholder="Detailed address" />
           </Form.Item>
 
-          <Form.Item name="contactPerson" label="Người liên hệ">
-            <Input placeholder="Tên người liên hệ" />
+          <Form.Item name="contactPerson" label="Contact Person">
+            <Input placeholder="Contact person name" />
           </Form.Item>
 
-          <Form.Item name="contactPhone" label="Số điện thoại">
-            <Input placeholder="Số điện thoại liên hệ" />
+          <Form.Item name="contactPhone" label="Phone Number">
+            <Input placeholder="Contact phone number" />
           </Form.Item>
 
-          <Form.Item name="cost" label="Chi phí (VNĐ)">
+          <Form.Item name="cost" label="Cost (VND)">
             <InputNumber
-              placeholder="Chi phí thuê"
+              placeholder="Rental cost"
               style={{ width: "100%" }}
               min={0}
               formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             />
           </Form.Item>
 
-          <Form.Item name="note" label="Ghi chú">
-            <Input.TextArea rows={3} placeholder="Ghi chú thêm" />
+          <Form.Item name="note" label="Note">
+            <Input.TextArea rows={3} placeholder="Additional notes" />
           </Form.Item>
 
-          <Form.Item name="image" label="Hình ảnh">
+          <Form.Item name="image" label="Image">
             <Upload
               listType="picture-card"
               maxCount={1}
@@ -927,13 +927,13 @@ const Locations = () => {
                 loading={loading || uploadingImage}
                 style={{ backgroundColor: "#F2721E", borderColor: "#F2721E" }}
               >
-                Tạo địa điểm
+                Create Location
               </Button>
               <Button onClick={() => {
                 setShowExternalModal(false);
                 externalForm.resetFields();
               }}>
-                Hủy
+                Cancel
               </Button>
             </Space>
           </Form.Item>
@@ -942,7 +942,7 @@ const Locations = () => {
 
       {/* Edit Internal Location Modal */}
       <Modal
-        title="Chỉnh sửa địa điểm"
+        title="Edit Location"
         open={showEditModal}
         onCancel={() => {
           setShowEditModal(false);
@@ -955,29 +955,29 @@ const Locations = () => {
         <Form form={editForm} layout="vertical" onFinish={handleUpdateLocation}>
           <Form.Item
             name="name"
-            label="Tên địa điểm"
-            rules={[{ required: true, message: "Vui lòng nhập tên địa điểm" }]}
+            label="Location Name"
+            rules={[{ required: true, message: "Please enter location name" }]}
           >
             <Input />
           </Form.Item>
 
-          <Form.Item name="building" label="Tòa nhà">
+          <Form.Item name="building" label="Building">
             <Input />
           </Form.Item>
 
-          <Form.Item name="roomNumber" label="Số phòng">
+          <Form.Item name="roomNumber" label="Room Number">
             <Input />
           </Form.Item>
 
           <Form.Item
             name="capacity"
-            label="Sức chứa"
-            rules={[{ type: "number", min: 1, message: "Sức chứa phải lớn hơn 0" }]}
+            label="Capacity"
+            rules={[{ type: "number", min: 1, message: "Capacity must be greater than 0" }]}
           >
             <InputNumber style={{ width: "100%" }} min={1} />
           </Form.Item>
 
-          <Form.Item name="image" label="Hình ảnh">
+          <Form.Item name="image" label="Image">
             <Upload listType="picture-card" maxCount={1} beforeUpload={() => false}>
               <div>
                 <PlusOutlined />
@@ -994,7 +994,7 @@ const Locations = () => {
                 loading={loading || uploadingImage}
                 style={{ backgroundColor: "#F2721E", borderColor: "#F2721E" }}
               >
-                Lưu
+                Save
               </Button>
               <Button
                 onClick={() => {
@@ -1003,7 +1003,7 @@ const Locations = () => {
                   editForm.resetFields();
                 }}
               >
-                Hủy
+                Cancel
               </Button>
             </Space>
           </Form.Item>
@@ -1012,7 +1012,7 @@ const Locations = () => {
 
       {/* Edit External Location Modal */}
       <Modal
-        title="Chỉnh sửa địa điểm bên ngoài"
+        title="Edit External Location"
         open={showExternalEditModal}
         onCancel={() => {
           setShowExternalEditModal(false);
@@ -1029,29 +1029,29 @@ const Locations = () => {
         >
           <Form.Item
             name="name"
-            label="Tên địa điểm"
-            rules={[{ required: true, message: "Vui lòng nhập tên địa điểm" }]}
+            label="Location Name"
+            rules={[{ required: true, message: "Please enter location name" }]}
           >
             <Input />
           </Form.Item>
 
           <Form.Item
             name="address"
-            label="Địa chỉ"
-            rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
+            label="Address"
+            rules={[{ required: true, message: "Please enter address" }]}
           >
             <Input.TextArea rows={2} />
           </Form.Item>
 
-          <Form.Item name="contactPerson" label="Người liên hệ">
+          <Form.Item name="contactPerson" label="Contact Person">
             <Input />
           </Form.Item>
 
-          <Form.Item name="contactPhone" label="Số điện thoại">
+          <Form.Item name="contactPhone" label="Phone Number">
             <Input />
           </Form.Item>
 
-          <Form.Item name="cost" label="Chi phí (VNĐ)">
+          <Form.Item name="cost" label="Cost (VND)">
             <InputNumber
               style={{ width: "100%" }}
               min={0}
@@ -1059,11 +1059,11 @@ const Locations = () => {
             />
           </Form.Item>
 
-          <Form.Item name="note" label="Ghi chú">
+          <Form.Item name="note" label="Note">
             <Input.TextArea rows={3} />
           </Form.Item>
 
-          <Form.Item name="image" label="Hình ảnh">
+          <Form.Item name="image" label="Image">
             <Upload listType="picture-card" maxCount={1} beforeUpload={() => false}>
               <div>
                 <PlusOutlined />
@@ -1080,7 +1080,7 @@ const Locations = () => {
                 loading={loading || uploadingImage}
                 style={{ backgroundColor: "#F2721E", borderColor: "#F2721E" }}
               >
-                Lưu
+                Save
               </Button>
               <Button
                 onClick={() => {
@@ -1089,7 +1089,7 @@ const Locations = () => {
                   externalEditForm.resetFields();
                 }}
               >
-                Hủy
+                Cancel
               </Button>
             </Space>
           </Form.Item>

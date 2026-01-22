@@ -234,7 +234,7 @@ const StaffAttendance = () => {
   const downloadExcelSampleFormat1 = () => {
     const workbook = XLSX.utils.book_new();
     
-    const headers = ["STT", "Timestamp", "Email", "Họ và tên"];
+    const headers = ["STT", "Timestamp", "Email", "Full Name"];
     const sampleData = [
       [1, "2026-01-15 08:30:00", "student1@fpt.edu.vn", "Nguyễn Văn An"],
       [2, "2026-01-15 08:35:00", "student2@fpt.edu.vn", "Trần Thị Bình"],
@@ -281,7 +281,7 @@ const StaffAttendance = () => {
   const downloadExcelSampleFormat3 = () => {
     const workbook = XLSX.utils.book_new();
     
-    const headers = ["Email", "Tên"];
+    const headers = ["Email", "Name"];
     const sampleData = [
       ["student1@fpt.edu.vn", "Nguyễn Văn An"],
       ["student2@fpt.edu.vn", "Trần Thị Bình"],
@@ -1043,7 +1043,7 @@ const StaffAttendance = () => {
           <div>
             <Text strong>Format 1: Google Form Format</Text>
             <p className="text-sm text-gray-600 mt-1">
-              Columns: STT, Timestamp, Email, Họ và tên
+              Columns: STT, Timestamp, Email, Full Name
             </p>
             <Button
               icon={<DownloadOutlined />}
@@ -1069,7 +1069,7 @@ const StaffAttendance = () => {
           <div>
             <Text strong>Format 3: Simple Format</Text>
             <p className="text-sm text-gray-600 mt-1">
-              Columns: Email, Tên
+              Columns: Email, Name
             </p>
             <Button
               icon={<DownloadOutlined />}

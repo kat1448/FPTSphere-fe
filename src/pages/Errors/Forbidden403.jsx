@@ -12,7 +12,7 @@ const Forbidden403 = () => {
   const roleName = user?.roleName || "User";
   const roleId = user?.roleId;
   
-  // Xác định dashboard dựa trên role
+  // Determine dashboard based on role
   const dashboardPath = getDashboardPath(roleId, roleName);
 
   return (
@@ -69,7 +69,7 @@ const Forbidden403 = () => {
             marginTop: "0",
           }}
         >
-          Truy cập bị từ chối
+          Access Denied
         </h2>
         
         <p
@@ -80,9 +80,9 @@ const Forbidden403 = () => {
             marginBottom: "32px",
           }}
         >
-          Xin lỗi, bạn không có quyền truy cập vào trang này.
+          Sorry, you do not have permission to access this page.
           <br />
-          Vui lòng liên hệ quản trị viên nếu bạn cho rằng đây là lỗi.
+          Please contact the administrator if you believe this is an error.
         </p>
 
         <div
@@ -106,7 +106,7 @@ const Forbidden403 = () => {
               fontWeight: "500",
             }}
           >
-            Về trang chủ
+            Go to Home
           </Button>
           
           <Button
@@ -120,7 +120,7 @@ const Forbidden403 = () => {
               fontSize: "16px",
             }}
           >
-            Quay lại
+            Go Back
           </Button>
         </div>
 
@@ -134,11 +134,11 @@ const Forbidden403 = () => {
           }}
         >
           <p style={{ margin: "0 0 8px 0" }}>
-            <strong>Vai trò hiện tại:</strong> {roleName}
+            <strong>Current Role:</strong> {roleName}
             {roleId && ` (ID: ${roleId})`}
           </p>
           <p style={{ margin: "0" }}>
-            Nếu bạn cần quyền truy cập, vui lòng liên hệ quản trị viên hệ thống.
+            If you need access, please contact the system administrator.
           </p>
         </div>
       </div>

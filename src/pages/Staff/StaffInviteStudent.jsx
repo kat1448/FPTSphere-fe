@@ -195,7 +195,7 @@ const StaffInviteStudent = () => {
   const downloadExcelSampleFormat1 = () => {
     const workbook = XLSX.utils.book_new();
     
-    const headers = ["STT", "Timestamp", "Email", "Họ và tên"];
+    const headers = ["STT", "Timestamp", "Email", "Full Name"];
     const sampleData = [
       [1, "2026-01-15 08:30:00", "student1@fpt.edu.vn", "Nguyễn Văn An"],
       [2, "2026-01-15 08:35:00", "student2@fpt.edu.vn", "Trần Thị Bình"],
@@ -242,7 +242,7 @@ const StaffInviteStudent = () => {
   const downloadExcelSampleFormat3 = () => {
     const workbook = XLSX.utils.book_new();
     
-    const headers = ["Email", "Tên"];
+    const headers = ["Email", "Name"];
     const sampleData = [
       ["student1@fpt.edu.vn", "Nguyễn Văn An"],
       ["student2@fpt.edu.vn", "Trần Thị Bình"],
@@ -259,11 +259,11 @@ const StaffInviteStudent = () => {
     message.success("Format 3 (Simple) template downloaded");
   };
 
-  // Download Excel sample - Format: MSSV / Họ và tên / Email
+  // Download Excel sample - Format: Student ID / Full Name / Email
   const downloadExcelFormat = () => {
     const workbook = XLSX.utils.book_new();
     
-    const headers = ["MSSV", "Họ và tên", "Email"];
+    const headers = ["Student ID", "Full Name", "Email"];
     const sampleData = [
       ["SE12345", "Nguyễn Văn An", "student1@fpt.edu.vn"],
       ["SE12346", "Trần Thị Bình", "student2@fpt.edu.vn"],
@@ -273,8 +273,8 @@ const StaffInviteStudent = () => {
     const data = [headers, ...sampleData];
     const worksheet = XLSX.utils.aoa_to_sheet(data);
     worksheet["!cols"] = [
-      { wch: 15 },  // MSSV
-      { wch: 25 },  // Họ và tên
+      { wch: 15 },  // Student ID
+      { wch: 25 },  // Full Name
       { wch: 30 },  // Email
     ];
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
@@ -434,7 +434,7 @@ const StaffInviteStudent = () => {
       render: (text) => <span className="font-medium">{text}</span>,
     },
     {
-      title: "Họ và tên",
+      title: "Full Name",
       dataIndex: "fullName",
       key: "fullName",
       sorter: (a, b) => {
@@ -972,7 +972,7 @@ const StaffInviteStudent = () => {
           <div>
             <Text strong>Format 1: Google Form Format</Text>
             <p className="text-sm text-gray-600 mt-1">
-              Columns: STT, Timestamp, Email, Họ và tên
+              Columns: STT, Timestamp, Email, Full Name
             </p>
             <Button
               icon={<DownloadOutlined />}
@@ -998,7 +998,7 @@ const StaffInviteStudent = () => {
           <div>
             <Text strong>Format 3: Simple Format</Text>
             <p className="text-sm text-gray-600 mt-1">
-              Columns: Email, Tên
+              Columns: Email, Name
             </p>
             <Button
               icon={<DownloadOutlined />}
@@ -1055,10 +1055,16 @@ const StaffInviteStudent = () => {
                 emailList: emailList,
                 subject: values.subject,
                 body: emailBody, // HTML content from rich text editor
+              }, {
+                headers: {
+                  "Content-Type": "application/json",
+                },
               });
 
-              if (response.data?.success !== false) {
-                message.success("Email sent successfully");
+              // Check if response is successful
+              if (response.status === 200 || response.status === 201) {
+                // Show success notification
+                message.success("Email sent successfully!");
                 setSendEmailModalVisible(false);
                 emailForm.resetFields();
                 setEmailBody("");

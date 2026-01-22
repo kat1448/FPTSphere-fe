@@ -16,6 +16,7 @@ import {
 import { ArrowLeftOutlined, ReloadOutlined, UserAddOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { getMyTasks } from "../../services/eventTasks.api";
+import { getEventById } from "../../services/events.api";
 
 const { Title, Text } = Typography;
 
@@ -39,11 +40,41 @@ export default function StaffTaskDetail() {
       // Find task by taskId
       const foundTask = tasksList.find(t => t.taskId === Number(taskId));
       
-      if (foundTask) {
-        setTask(foundTask);
-      } else {
+      if (!foundTask) {
         message.error("Task not found");
         setTask(null);
+        return;
+      }
+      
+      // Check if event is approved - Staff can only view tasks from approved events
+      if (foundTask.eventId) {
+        try {
+          const event = await getEventById(foundTask.eventId);
+          
+          // Check if event is approved (statusId = 3 or statusName = "Approved")
+          const isApproved = event.statusId === 3 || 
+                           event.status?.statusName === "Approved" || 
+                           event.statusName === "Approved";
+          
+          if (!isApproved) {
+            message.error("This task is not available. The event is pending approval.");
+            setTask(null);
+            return;
+          }
+          
+          // Add event info to task
+          setTask({
+            ...foundTask,
+            event: event
+          });
+        } catch (error) {
+          console.error(`Error loading event ${foundTask.eventId}:`, error);
+          message.error("Failed to load event information");
+          setTask(null);
+        }
+      } else {
+        // Task without eventId - allow viewing (edge case)
+        setTask(foundTask);
       }
     } catch (error) {
       console.error("Error loading task:", error);

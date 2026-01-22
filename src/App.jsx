@@ -29,6 +29,7 @@ import StakeholderFeedbackEmail from "./pages/Admin/StakeholderFeedbackEmail";
 import ApproveMainEvent from "./pages/Admin/ApproveMainEvent";
 import DirectorDashboard from "./pages/Director/DirectorDashboard";
 import DirectorEventView from "./pages/Director/DirectorEventView";
+import EventReport from "./pages/Director/EventReport";
 import ManagerDashboard from "./pages/EventManager/ManagerDashboard";
 import EventManagerDashboard from "./pages/EventManager/EventManagerDashboard";
 import EventManagerEventView from "./pages/EventManager/EventManagerEventView";
@@ -80,7 +81,7 @@ function App() {
               <Route path="/event-history" element={<EventHistory />} />
             </Route>
 
-            {/* ===== CONSOLE (Admin/Staff/EM dùng chung template) ===== */}
+            {/* ===== CONSOLE (Admin/Staff/EM share common template) ===== */}
             <Route
               element={
                 <ProtectedRoute allowedRoleIds={[1, 2, 3, 4]}>
@@ -118,7 +119,17 @@ function App() {
                 } 
               />
 
-              {/* Users Management - Admin (1), Director (2) - Chỉnh sửa User */}
+              {/* Event Report - Director (2) */}
+              <Route
+                path="/event/:id/report"
+                element={
+                  <ProtectedRoute allowedRoleIds={[2]}>
+                    <EventReport />
+                  </ProtectedRoute>
+                } 
+              />
+
+              {/* Users Management - Admin (1), Director (2) - Edit User */}
               <Route 
                 path="/admin/users" 
                 element={
@@ -128,7 +139,7 @@ function App() {
                 } 
               />
 
-              {/* Reports - Admin (1), Director (2) - Staff KHÔNG có quyền */}
+              {/* Reports - Admin (1), Director (2) - Staff NO permission */}
               <Route 
                 path="/admin/reports" 
                 element={
@@ -266,7 +277,7 @@ function App() {
                 } 
               />
 
-              {/* Locations - Admin (1), Director (2), Event Manager (3 - xem only) - Staff KHÔNG có quyền */}
+              {/* Locations - Admin (1), Director (2), Event Manager (3 - view only) - Staff NO permission */}
               <Route 
                 path="/manager/locations" 
                 element={
@@ -276,7 +287,7 @@ function App() {
                 } 
               />
 
-              {/* Resources - Admin (1), Director (2), Event Manager (3 - xem only) - Staff KHÔNG có quyền */}
+              {/* Resources - Admin (1), Director (2), Event Manager (3 - view only) - Staff NO permission */}
               <Route 
                 path="/manager/resources" 
                 element={
@@ -286,7 +297,7 @@ function App() {
                 } 
               />
 
-              {/* Participants - Director (2), Staff (4) - Event Manager và Admin KHÔNG có quyền */}
+              {/* Participants - Director (2), Staff (4) - Event Manager and Admin NO permission */}
               <Route 
                 path="/manager/participants" 
                 element={

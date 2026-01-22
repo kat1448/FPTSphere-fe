@@ -19,6 +19,7 @@ import {
   Package,
 } from "lucide-react";
 import "../assets/css/console-layout.css";
+import Chatbot from "../components/Chatbot/Chatbot";
 
 export default function ConsoleLayout() {
   const { user, logout } = useAuth();
@@ -41,78 +42,78 @@ export default function ConsoleLayout() {
     return parts.map((p) => (p[0] || "").toUpperCase()).join("").slice(0, 2);
   }, [displayName]);
 
-  // ✅ Nav theo roleId và roleName
+  // ✅ Nav by roleId and roleName
   // Role IDs: 1=Admin, 2=Director, 3=Event Manager, 4=Staff, 5=Student
   const navItems = useMemo(() => {
 
-    // Phân quyền theo roleId:
+    // Authorization by roleId:
     // - Admin (1): Dashboard, Users, Reports, Locations, Resources
-    // - Director (2): Dashboard, Create Event, Reports, Locations, Resources, Participants (KHÔNG có Users)
+    // - Director (2): Dashboard, Create Event, Reports, Locations, Resources, Participants (NO Users)
     // - Event Manager (3): Dashboard, Create Event, Locations, Resources
-    // - Staff (4): Dashboard, Participants
-    
+    // - Staff (4): Dashboard only
+
     const items = [
-      // Dashboard - tất cả đều có quyền xem
-      { 
-        to: normalizedRoleId === 1 || roleName === "Admin" 
-          ? "/admin/dashboard" 
+      // Dashboard - all roles have view permission
+      {
+        to: normalizedRoleId === 1 || roleName === "Admin"
+          ? "/admin/dashboard"
           : normalizedRoleId === 2 || roleName === "Director"
-          ? "/director/dashboard"
-          : normalizedRoleId === 3 || roleName === "Event Manager"
-          ? "/event-manager/dashboard"
-          : normalizedRoleId === 4 || roleName === "Staff" 
-          ? "/staff/dashboard" 
-          : "/manager/dashboard", 
-        label: "Dashboard", 
-        icon: LayoutDashboard, 
-        allowedRoleIds: [1, 2, 3, 4] // Tất cả roles đều có quyền
-      },
-      
-      // Create Event - Director (full), Event Manager (full)
-      { 
-        to: "/manager/events/create", 
-        label: "Create Event", 
-        icon: PlusCircle, 
-        allowedRoleIds: [2, 3] // Chỉ Director và Event Manager
+            ? "/director/dashboard"
+            : normalizedRoleId === 3 || roleName === "Event Manager"
+              ? "/event-manager/dashboard"
+              : normalizedRoleId === 4 || roleName === "Staff"
+                ? "/staff/dashboard"
+                : "/manager/dashboard",
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        allowedRoleIds: [1, 2, 3, 4] // All roles have permission
       },
 
-      // Locations - Admin, Director, Event Manager (KHÔNG có Staff)
-      { 
-        to: "/manager/locations", 
-        label: "Locations", 
-        icon: MapPin, 
+      // Create Event - Director (full), Event Manager (full)
+      {
+        to: "/manager/events/create",
+        label: "Create Event",
+        icon: PlusCircle,
+        allowedRoleIds: [2, 3] // Only Director and Event Manager
+      },
+
+      // Locations - Admin, Director, Event Manager (NO Staff)
+      {
+        to: "/manager/locations",
+        label: "Locations",
+        icon: MapPin,
         allowedRoleIds: [1, 2, 3] // Admin, Director, Event Manager
       },
-      
-      // Resources - Admin, Director, Event Manager (KHÔNG có Staff)
-      { 
-        to: "/manager/resources", 
-        label: "Resources", 
-        icon: Package, 
+
+      // Resources - Admin, Director, Event Manager (NO Staff)
+      {
+        to: "/manager/resources",
+        label: "Resources",
+        icon: Package,
         allowedRoleIds: [1, 2, 3] // Admin, Director, Event Manager
       },
-      
-      // Participants - Director, Staff (KHÔNG có Admin và Event Manager)
-      { 
-        to: "/manager/participants", 
-        label: "Participants", 
-        icon: Users, 
-        allowedRoleIds: [2, 4] // Director và Staff
+
+      // Participants - Director only (NO Admin, Event Manager, Staff)
+      {
+        to: "/manager/participants",
+        label: "Participants",
+        icon: Users,
+        allowedRoleIds: [2] // Chỉ Director
       },
 
       // Users - Chỉ Admin (Director KHÔNG có quyền)
-      { 
-        to: "/admin/users", 
-        label: "Users", 
-        icon: UserCog, 
+      {
+        to: "/admin/users",
+        label: "Users",
+        icon: UserCog,
         allowedRoleIds: [1] // Chỉ Admin
       },
-      
+
       // Reports - Admin, Director (KHÔNG có Event Manager và Staff)
-      { 
-        to: "/admin/reports", 
-        label: "Reports", 
-        icon: BarChart3, 
+      {
+        to: "/admin/reports",
+        label: "Reports",
+        icon: BarChart3,
         allowedRoleIds: [1, 2] // Admin và Director
       },
     ];
@@ -167,15 +168,15 @@ export default function ConsoleLayout() {
             const IconComponent = item.icon;
             const hasAccess = item.hasAccess;
             const isDisabled = item.disabled || !hasAccess;
-            
+
             // Fix: Use end prop to match exact path
             const isExactMatch = item.to === "/admin/dashboard" || item.to === "/director/dashboard" || item.to === "/event-manager/dashboard" || item.to === "/staff/dashboard" || item.to === "/manager/dashboard";
-            
+
             // Disabled item (no access or explicitly disabled) - Hide instead of showing disabled
             if (isDisabled) {
               return null; // Don't render items without access
             }
-            
+
             // Enabled item with access
             return (
               <NavLink
@@ -247,15 +248,15 @@ export default function ConsoleLayout() {
           <div className="console-topbar-left">
             <div className="console-title">{pageTitle}</div>
             <div className="console-subtitle">
-              {normalizedRoleId === 1 || roleName === "Admin" 
+              {normalizedRoleId === 1 || roleName === "Admin"
                 ? "Admin Workspace"
                 : normalizedRoleId === 2 || roleName === "Director"
-                ? "Director Workspace"
-                : normalizedRoleId === 3 || roleName === "Event Manager"
-                ? "Event Manager Workspace"
-                : normalizedRoleId === 4 || roleName === "Staff"
-                ? "Staff Workspace"
-                : "Workspace"}
+                  ? "Director Workspace"
+                  : normalizedRoleId === 3 || roleName === "Event Manager"
+                    ? "Event Manager Workspace"
+                    : normalizedRoleId === 4 || roleName === "Staff"
+                      ? "Staff Workspace"
+                      : "Workspace"}
             </div>
           </div>
 
@@ -275,7 +276,7 @@ export default function ConsoleLayout() {
                 onClick={() => navigate("/manager/events/create")}
               >
                 <PlusCircle size={18} strokeWidth={2} />
-                <span>Tạo sự kiện</span>
+                <span>Create Event</span>
               </button>
             )}
 
@@ -313,6 +314,9 @@ export default function ConsoleLayout() {
           <Outlet />
         </main>
       </div>
+
+      {/* Chatbot */}
+      <Chatbot />
     </div>
   );
 }

@@ -8,9 +8,9 @@ import apiClient from "./api.js";
 // ========================================
 /**
  * Events API Endpoint
- * Endpoint: POST /Events (chú ý E hoa)
- * Base URL được config trong api.js từ environment variable VITE_API_BASE_URL
- * Mặc định: https://localhost:7273/api
+ * Endpoint: POST /Events (note: capital E)
+ * Base URL is configured in api.js from environment variable VITE_API_BASE_URL
+ * Default: https://localhost:7273/api
  * Full URL: https://localhost:7273/api/Events
  */
 const EVENTS_ENDPOINT = "/Events";
@@ -777,6 +777,13 @@ export const updateEvent = async (eventId, data = {}) => {
     appendNumber("TemplateId", data.templateId);
     appendNumber("CategoryId", data.categoryId);
     appendNumber("TypeId", data.typeId);
+    appendNumber("StatusId", data.statusId); // Support statusId update
+
+    // Debug: Log FormData contents
+    console.log(`📤 Updating event ${eventId} with StatusId: ${data.statusId}`);
+    for (const [key, value] of fd.entries()) {
+      console.log(`  ${key}: ${value}`);
+    }
 
     const response = await apiClient.put(`${EVENTS_ENDPOINT}/${eventId}`, fd, {
       headers: {
@@ -793,6 +800,42 @@ export const updateEvent = async (eventId, data = {}) => {
   } catch (error) {
     console.error(`❌ Update event error (ID: ${eventId}):`, error);
     const errorMessage = error.response?.data?.message || error.message || "Failed to update event";
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * Change event status (JSON body, Allow Anonymous)
+ *
+ * API Endpoint: PUT /Events/{eventId}/change-status
+ *
+ * @param {number} eventId
+ * @param {number} statusId
+ * @returns {Promise<Object>}
+ */
+export const changeEventStatus = async (eventId, statusId) => {
+  try {
+    console.log(`📤 Changing event status - EventId: ${eventId}, StatusId: ${statusId}`);
+
+    const response = await apiClient.put(
+      `${EVENTS_ENDPOINT}/${eventId}/change-status`,
+      { statusId },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      console.log(`✅ Event status changed successfully - EventId: ${eventId}, StatusId: ${statusId}`);
+      return response.data?.success !== undefined ? (response.data.data || response.data) : response.data;
+    }
+
+    throw new Error(`Unexpected response status: ${response.status}`);
+  } catch (error) {
+    console.error(`❌ Change event status error (ID: ${eventId}):`, error);
+    const errorMessage = error.response?.data?.message || error.message || "Failed to change event status";
     throw new Error(errorMessage);
   }
 };

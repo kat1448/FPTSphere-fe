@@ -25,6 +25,7 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import { getMyTasks } from "../../services/eventTasks.api";
+import { getEventById } from "../../services/events.api";
 import authService from "../../services/authService";
 
 
@@ -50,7 +51,42 @@ const StaffDashboard = () => {
       const tasksData = await getMyTasks();
       console.log("✅ Tasks retrieved:", tasksData);
       
-      setTasks(Array.isArray(tasksData) ? tasksData : []);
+      const tasksList = Array.isArray(tasksData) ? tasksData : [];
+      
+      // Filter tasks: Only show tasks from approved events (statusId = 3)
+      // Load event info for each task to check approval status
+      const approvedTasks = [];
+      
+      for (const task of tasksList) {
+        if (!task.eventId) {
+          // Skip tasks without eventId
+          continue;
+        }
+        
+        try {
+          // Load event info to check status
+          const event = await getEventById(task.eventId);
+          
+          // Check if event is approved (statusId = 3 or statusName = "Approved")
+          const isApproved = event.statusId === 3 || 
+                           event.status?.statusName === "Approved" || 
+                           event.statusName === "Approved";
+          
+          if (isApproved) {
+            // Add event info to task for display
+            approvedTasks.push({
+              ...task,
+              event: event
+            });
+          }
+        } catch (error) {
+          console.error(`Error loading event ${task.eventId}:`, error);
+          // Skip this task if we can't load event info
+        }
+      }
+      
+      console.log(`✅ Filtered ${approvedTasks.length} approved tasks out of ${tasksList.length} total tasks`);
+      setTasks(approvedTasks);
     } catch (error) {
       console.error("❌ Error loading tasks:", error);
       message.error(error.message || "Failed to load tasks");
@@ -258,6 +294,14 @@ const StaffDashboard = () => {
         <Card className="shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-xl font-bold text-[#F2721E] mb-4">My Tasks</h2>
+            <Space>
+              <Button
+                icon={<ReloadOutlined />}
+                onClick={fetchTasks}
+                loading={loading}
+              >
+                Refresh
+              </Button>
             <Button
               type="primary"
               icon={<AppstoreOutlined />}
@@ -266,6 +310,7 @@ const StaffDashboard = () => {
             >
               View all my tasks
             </Button>
+            </Space>
           </div>
 
           <Table
