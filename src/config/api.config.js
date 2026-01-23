@@ -1,7 +1,7 @@
 // src/config/api.config.js
 
 // Backend API URL
-export const API_BASE_URL = "https://localhost:7273/api";
+export const API_BASE_URL = "https://fptsphere-api-prod-d3hpeveshsc0evgx.eastasia-01.azurewebsites.net/api";
 
 // Google Client ID
 export const GOOGLE_CLIENT_ID =

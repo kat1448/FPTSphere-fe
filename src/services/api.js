@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base API URL - Update this to match your backend
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7273/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://fptsphere-api-prod-d3hpeveshsc0evgx.eastasia-01.azurewebsites.net/api';
 
 /**
  * Axios instance with default config
